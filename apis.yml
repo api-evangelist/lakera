@@ -1,0 +1,145 @@
+aid: lakera
+url: https://raw.githubusercontent.com/api-evangelist/lakera/refs/heads/main/apis.yml
+name: Lakera
+type: Index
+image: https://kinlane-productions.s3.amazonaws.com/apis-json/apis-json-logo.jpg
+tags:
+- AI Security
+- LLM Security
+- Prompt Injection
+- Guardrails
+- Red Teaming
+- GenAI
+- API
+description: Lakera is an AI security company building runtime defenses for generative AI applications. Its flagship Lakera
+  Guard API screens prompts and responses for prompt injection, jailbreaks, PII leakage, unsafe content, and policy violations,
+  while Lakera Red provides automated red teaming and risk assessment for GenAI systems. Lakera follows an API-first architecture
+  with a managed SaaS platform, regional endpoints, self-hosted deployments for regulated environments, and a free Gandalf
+  training game that has driven much of the prompt injection research community.
+created: '2026-05-23'
+modified: '2026-05-23'
+specificationVersion: '0.19'
+apis:
+- aid: lakera:lakera-guard
+  name: Lakera Guard
+  tags:
+  - AI Security
+  - Prompt Injection
+  - PII Detection
+  - Content Moderation
+  - LLM Guardrails
+  humanURL: https://docs.lakera.ai/docs/api
+  properties:
+  - url: https://docs.lakera.ai/docs/api
+    type: APIReference
+  - url: https://docs.lakera.ai/docs/quickstart
+    type: GettingStarted
+  - url: https://platform.lakera.ai/docs/changelog
+    type: ChangeLog
+  description: Lakera Guard is a low-latency screening API that inspects text content sent to or from LLMs and flags threats
+    including prompt injection, jailbreaks, PII, profanity, and policy violations. The /guard endpoint returns a flagged
+    decision plus optional detector breakdowns via /guard/results, and the platform exposes /policies and /projects endpoints
+    for managing detection logic. Available as a managed SaaS at api.lakera.ai/v2 with regional endpoints (US, EU, APAC)
+    and as a self-hosted deployment for regulated environments.
+- aid: lakera:lakera-red
+  name: Lakera Red
+  tags:
+  - Red Teaming
+  - AI Security
+  - Vulnerability Assessment
+  - GenAI Testing
+  humanURL: https://www.lakera.ai/ai-red-teaming
+  properties:
+  - url: https://www.lakera.ai/ai-red-teaming
+    type: Documentation
+  description: Lakera Red is an automated red teaming product that probes GenAI applications for jailbreaks, prompt injection,
+    data leakage, and other adversarial failures, then produces a risk-based remediation report. Designed for security teams
+    evaluating AI applications prior to production deployment and for ongoing assurance of agentic systems.
+- aid: lakera:gandalf
+  name: Gandalf
+  tags:
+  - Education
+  - Prompt Injection
+  - Training
+  - Research
+  humanURL: https://gandalf.lakera.ai/
+  properties:
+  - url: https://gandalf.lakera.ai/
+    type: Documentation
+  description: Gandalf is Lakera's free interactive game that teaches prompt injection by challenging players to extract
+    a secret from an LLM across progressively harder defenses. It has become a primary research and training environment
+    for the prompt injection community and a public funnel into the Lakera Guard ecosystem.
+common:
+- type: Website
+  url: https://www.lakera.ai/
+- type: Documentation
+  url: https://docs.lakera.ai/
+- type: APIReference
+  url: https://docs.lakera.ai/docs/api
+- type: GettingStarted
+  url: https://docs.lakera.ai/docs/quickstart
+- type: ChangeLog
+  url: https://platform.lakera.ai/docs/changelog
+- type: Blog
+  url: https://www.lakera.ai/blog
+- type: Pricing
+  url: https://www.lakera.ai/pricing
+- type: Login
+  url: https://platform.lakera.ai/login
+- type: SignUp
+  url: https://platform.lakera.ai/
+- type: GitHubOrganization
+  url: https://github.com/lakeraai
+- type: LinkedIn
+  url: https://www.linkedin.com/company/lakeraai/
+- type: Events
+  url: https://www.lakera.ai/events
+- type: Game
+  url: https://gandalf.lakera.ai/
+- type: Features
+  data:
+  - name: Prompt Injection Detection
+    description: Detects direct and indirect prompt injection attempts targeting LLM-powered applications and agents.
+  - name: Jailbreak Detection
+    description: Identifies attempts to bypass system prompts, safety policies, and model guardrails.
+  - name: PII Detection
+    description: Screens prompts and responses for personally identifiable information leakage.
+  - name: Content Moderation
+    description: Flags unsafe, toxic, or policy-violating content in user inputs and model outputs.
+  - name: Custom Policies
+    description: Configurable detection policies scoped to projects, models, and use cases.
+  - name: Regional Endpoints
+    description: Hosted endpoints in US, EU, and APAC regions for data residency and latency.
+  - name: Self-Hosted Deployment
+    description: On-premises and VPC deployments for regulated industries that cannot send data to a SaaS.
+  - name: MCP Server
+    description: Model Context Protocol server for embedding Lakera Guard into AI clients like Claude Code and Cursor.
+- type: UseCases
+  data:
+  - name: LLM Application Guardrails
+    description: Screen inputs and outputs of chatbots, copilots, and RAG applications for prompt injection and unsafe content.
+  - name: AI Agent Protection
+    description: Inspect tool inputs, retrieved context, and agent reasoning steps for indirect prompt injection.
+  - name: Workforce AI Security
+    description: Govern employee use of public LLMs and prevent sensitive data exfiltration.
+  - name: GenAI Red Teaming
+    description: Run automated adversarial assessments against pre-production GenAI applications.
+  - name: Regulated Industry Deployments
+    description: Self-host Guard in financial services, healthcare, and government environments with strict data residency.
+- type: Integrations
+  data:
+  - name: OpenAI
+    description: Wrap OpenAI calls with Guard screening for input and output safety.
+  - name: Anthropic
+    description: Screen prompts and responses from Anthropic Claude models.
+  - name: LangChain
+    description: Drop-in callbacks and chains for integrating Guard into LangChain applications.
+  - name: LlamaIndex
+    description: Screen queries and retrieved context in LlamaIndex RAG pipelines.
+  - name: Model Context Protocol
+    description: MCP server for surfacing Lakera Guard inside Claude Code, Cursor, and other MCP clients.
+  - name: Kubernetes
+    description: Self-hosted Helm-based deployments with health, readiness, and liveness probes.
+maintainers:
+- FN: Kin Lane
+  email: kin@apievangelist.com
