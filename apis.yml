@@ -140,6 +140,8 @@ common:
     description: MCP server for surfacing Lakera Guard inside Claude Code, Cursor, and other MCP clients.
   - name: Kubernetes
     description: Self-hosted Helm-based deployments with health, readiness, and liveness probes.
+- type: LLMsTxt
+  url: https://docs.lakera.ai/llms.txt
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com
