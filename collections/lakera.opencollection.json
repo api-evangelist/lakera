@@ -1,0 +1,129 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Lakera Guard API",
+    "version": "2"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Guard",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Screen text content for threats",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.lakera.ai/v2/guard",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Submit messages to be screened. Lakera Guard returns a flagged decision when prompt injection, jailbreak, PII, unsafe content, or other policy violations are detected."
+        },
+        {
+          "info": {
+            "name": "Retrieve detailed detector results",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.lakera.ai/v2/guard/results",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Returns the per-detector breakdown that informed a Guard decision, useful for debugging policies and tuning thresholds."
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Policies",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Validate policy configuration (self-hosted)",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.lakera.ai/v2/policies/health"
+          },
+          "docs": "Validate policy configuration (self-hosted)"
+        },
+        {
+          "info": {
+            "name": "Lint a policy file (self-hosted)",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.lakera.ai/v2/policies/lint",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Lint a policy file (self-hosted)"
+        }
+      ]
+    },
+    {
+      "info": {
+        "name": "Health",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Kubernetes startup probe (self-hosted)",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.lakera.ai/v2/startupz"
+          },
+          "docs": "Kubernetes startup probe (self-hosted)"
+        },
+        {
+          "info": {
+            "name": "Kubernetes readiness probe (self-hosted)",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.lakera.ai/v2/readyz"
+          },
+          "docs": "Kubernetes readiness probe (self-hosted)"
+        },
+        {
+          "info": {
+            "name": "Kubernetes liveness probe (self-hosted)",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.lakera.ai/v2/livez"
+          },
+          "docs": "Kubernetes liveness probe (self-hosted)"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

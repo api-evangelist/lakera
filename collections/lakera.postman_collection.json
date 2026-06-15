@@ -1,0 +1,757 @@
+{
+  "item": [
+    {
+      "id": "d43c5669-e449-4ef8-8045-cbbd66d03f96",
+      "name": "Guard",
+      "description": {
+        "content": "Screen prompts and model responses for threats",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "40cb6566-22bc-4107-bd6b-49c417f1b8cf",
+          "name": "Screen text content for threats",
+          "request": {
+            "name": "Screen text content for threats",
+            "description": {
+              "content": "Submit messages to be screened. Lakera Guard returns a flagged decision when prompt injection, jailbreak, PII, unsafe content, or other policy violations are detected.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "guard"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"messages\": [\n    {\n      \"role\": \"<string>\",\n      \"content\": \"<string>\"\n    },\n    {\n      \"role\": \"<string>\",\n      \"content\": \"<string>\"\n    }\n  ],\n  \"project_id\": \"<string>\",\n  \"policy_id\": \"<string>\",\n  \"breakdown\": \"<boolean>\",\n  \"metadata\": {\n    \"key_0\": false,\n    \"key_1\": false\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "747927bf-636c-4c6e-9e98-6ebd7ae11737",
+              "name": "Screening result",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "guard"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"messages\": [\n    {\n      \"role\": \"user\",\n      \"content\": \"string\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"string\"\n    }\n  ],\n  \"project_id\": \"<string>\",\n  \"policy_id\": \"<string>\",\n  \"breakdown\": \"<boolean>\",\n  \"metadata\": {\n    \"key_0\": 4066\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"flagged\": true,\n  \"payload\": {\n    \"key_0\": false\n  },\n  \"dev_info\": {\n    \"key_0\": false,\n    \"key_1\": 5311\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "59d173f1-2f95-45a4-a74d-c01dcc423fde",
+              "name": "Missing or invalid bearer token",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "guard"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"messages\": [\n    {\n      \"role\": \"user\",\n      \"content\": \"string\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"string\"\n    }\n  ],\n  \"project_id\": \"<string>\",\n  \"policy_id\": \"<string>\",\n  \"breakdown\": \"<boolean>\",\n  \"metadata\": {\n    \"key_0\": 4066\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "27cfd788-e4f4-44fe-b59a-b7305edec935",
+              "name": "Validation error",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "guard"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"messages\": [\n    {\n      \"role\": \"user\",\n      \"content\": \"string\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"string\"\n    }\n  ],\n  \"project_id\": \"<string>\",\n  \"policy_id\": \"<string>\",\n  \"breakdown\": \"<boolean>\",\n  \"metadata\": {\n    \"key_0\": 4066\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Unprocessable Entity (WebDAV) (RFC 4918)",
+              "code": 422,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "ae0fb65a-4dda-498b-a3f3-08a77c202649",
+          "name": "Retrieve detailed detector results",
+          "request": {
+            "name": "Retrieve detailed detector results",
+            "description": {
+              "content": "Returns the per-detector breakdown that informed a Guard decision, useful for debugging policies and tuning thresholds.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "guard",
+                "results"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"messages\": [\n    {\n      \"role\": \"<string>\",\n      \"content\": \"<string>\"\n    },\n    {\n      \"role\": \"<string>\",\n      \"content\": \"<string>\"\n    }\n  ],\n  \"project_id\": \"<string>\",\n  \"policy_id\": \"<string>\",\n  \"breakdown\": \"<boolean>\",\n  \"metadata\": {\n    \"key_0\": false,\n    \"key_1\": false\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "990d27b9-e2aa-405c-b06b-5107792a8066",
+              "name": "Detector results",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "guard",
+                    "results"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"messages\": [\n    {\n      \"role\": \"user\",\n      \"content\": \"string\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"string\"\n    }\n  ],\n  \"project_id\": \"<string>\",\n  \"policy_id\": \"<string>\",\n  \"breakdown\": \"<boolean>\",\n  \"metadata\": {\n    \"key_0\": 4066\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"results\": [\n    {\n      \"detector_type\": \"string\",\n      \"detected\": false,\n      \"detector_id\": \"string\",\n      \"message_id\": \"string\",\n      \"start\": 2157,\n      \"end\": 227\n    },\n    {\n      \"detector_type\": \"string\",\n      \"detected\": true,\n      \"detector_id\": \"string\",\n      \"message_id\": \"string\",\n      \"start\": 926,\n      \"end\": 9757\n    }\n  ]\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "605adba0-f78c-4d96-9dce-36ed38b47de2",
+              "name": "Missing or invalid bearer token",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "guard",
+                    "results"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"messages\": [\n    {\n      \"role\": \"user\",\n      \"content\": \"string\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"string\"\n    }\n  ],\n  \"project_id\": \"<string>\",\n  \"policy_id\": \"<string>\",\n  \"breakdown\": \"<boolean>\",\n  \"metadata\": {\n    \"key_0\": 4066\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    },
+    {
+      "id": "79d42395-3e8a-4abc-9a88-8c03e92ea77b",
+      "name": "Policies",
+      "description": {
+        "content": "Policy validation (self-hosted)",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "7b5fb626-e154-47cd-ae7b-4d993b1ff6cc",
+          "name": "Validate policy configuration (self-hosted)",
+          "request": {
+            "name": "Validate policy configuration (self-hosted)",
+            "description": {},
+            "url": {
+              "path": [
+                "policies",
+                "health"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "1b224f39-13bf-47d9-a4f4-5efdfef5e8c9",
+              "name": "Policy configuration is valid",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "policies",
+                    "health"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "57c6abfb-761d-43a7-b914-0e13c18f3752",
+          "name": "Lint a policy file (self-hosted)",
+          "request": {
+            "name": "Lint a policy file (self-hosted)",
+            "description": {},
+            "url": {
+              "path": [
+                "policies",
+                "lint"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"key_0\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "ad17d74e-541c-4f57-8a51-f1f62545cc6d",
+              "name": "Lint result",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "policies",
+                    "lint"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"key_0\": \"string\",\n  \"key_1\": false,\n  \"key_2\": false,\n  \"key_3\": true\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    },
+    {
+      "id": "b9303243-e817-4c08-b01b-2a1c186caac0",
+      "name": "Health",
+      "description": {
+        "content": "Kubernetes-style health and lifecycle probes (self-hosted)",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "7b96d861-f460-472c-a494-77c96712a90a",
+          "name": "Kubernetes startup probe (self-hosted)",
+          "request": {
+            "name": "Kubernetes startup probe (self-hosted)",
+            "description": {},
+            "url": {
+              "path": [
+                "startupz"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "9b905fc6-177b-4a94-a940-ac791760df31",
+              "name": "Started",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "startupz"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "0c7975fb-abbc-4b4a-8318-72294a8f397d",
+          "name": "Kubernetes readiness probe (self-hosted)",
+          "request": {
+            "name": "Kubernetes readiness probe (self-hosted)",
+            "description": {},
+            "url": {
+              "path": [
+                "readyz"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "c63dc520-70a5-4423-b77e-8ba4cf83cdc5",
+              "name": "Ready",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "readyz"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "055e339a-8667-43b2-8d44-6943e61e5100",
+          "name": "Kubernetes liveness probe (self-hosted)",
+          "request": {
+            "name": "Kubernetes liveness probe (self-hosted)",
+            "description": {},
+            "url": {
+              "path": [
+                "livez"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "314f0aed-d2d9-4675-8b74-f946f36b058f",
+              "name": "Live",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "livez"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "type": "string",
+      "value": "https://api.lakera.ai/v2",
+      "key": "baseUrl"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{bearerToken}}"
+      }
+    ]
+  },
+  "info": {
+    "_postman_id": "00a79f5e-6f8a-4366-a3c8-37717a62e80f",
+    "name": "Lakera Guard API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": {
+      "content": "Lakera Guard is an AI security API that screens text content sent to and received from large language models. It detects prompt injection, jailbreaks, PII, unsafe content, and policy violations, returning flagged decisions and detailed detector results. Authentication uses a bearer token issued in the Lakera dashboard. Self-hosted deployments expose additional policy management and Kubernetes probe endpoints.\n\nContact Support:\n Name: Lakera",
+      "type": "text/plain"
+    }
+  }
+}
