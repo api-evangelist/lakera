@@ -86,7 +86,7 @@ common:
   url: https://www.lakera.ai/pricing
 - type: Login
   url: https://platform.lakera.ai/login
-- type: SignUp
+- type: Signup
   url: https://platform.lakera.ai/
 - type: GitHubOrganization
   url: https://github.com/lakeraai
@@ -140,7 +140,7 @@ common:
     description: MCP server for surfacing Lakera Guard inside Claude Code, Cursor, and other MCP clients.
   - name: Kubernetes
     description: Self-hosted Helm-based deployments with health, readiness, and liveness probes.
-- type: LLMsTxt
+- type: LlmsText
   url: https://docs.lakera.ai/llms.txt
 maintainers:
 - FN: Kin Lane
