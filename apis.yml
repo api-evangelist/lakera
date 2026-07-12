@@ -70,6 +70,14 @@ apis:
     a secret from an LLM across progressively harder defenses. It has become a primary research and training environment
     for the prompt injection community and a public funnel into the Lakera Guard ecosystem.
 common:
+- type: TrustCenter
+  url: security/lakera-trust-center.yml
+- type: VulnerabilityDisclosure
+  url: security/lakera-vulnerability-disclosure.yml
+- type: DomainSecurity
+  url: security/lakera-domain-security.yml
+- type: Authentication
+  url: authentication/lakera-authentication.yml
 - type: Website
   url: https://www.lakera.ai/
 - type: Documentation

@@ -1,0 +1,14 @@
+generated: '2026-07-11'
+method: derived
+source: openapi/lakera-openapi.yml
+summary:
+  types:
+  - http
+schemes:
+- name: bearerAuth
+  type: http
+  scheme: bearer
+  description: 'Bearer token issued in the Lakera dashboard. Header format: `Authorization:
+    Bearer ${LAKERA_GUARD_API_KEY}`. Self-hosted deployments may run without authentication.'
+  sources:
+  - openapi/lakera-openapi.yml
