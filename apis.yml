@@ -70,6 +70,8 @@ apis:
     a secret from an LLM across progressively harder defenses. It has become a primary research and training environment
     for the prompt injection community and a public funnel into the Lakera Guard ecosystem.
 common:
+- type: AgenticAccess
+  url: agentic-access/lakera-agentic-access.yml
 - type: TrustCenter
   url: security/lakera-trust-center.yml
 - type: VulnerabilityDisclosure
