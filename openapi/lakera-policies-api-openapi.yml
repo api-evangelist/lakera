@@ -1,0 +1,53 @@
+openapi: 3.1.0
+info:
+  title: Lakera Guard Policies API
+  description: Lakera Guard is an AI security API that screens text content sent to and received from large language models. It detects prompt injection, jailbreaks, PII, unsafe content, and policy violations, returning flagged decisions and detailed detector results. Authentication uses a bearer token issued in the Lakera dashboard. Self-hosted deployments expose additional policy management and Kubernetes probe endpoints.
+  version: '2'
+  contact:
+    name: Lakera
+    url: https://docs.lakera.ai/docs/api
+servers:
+- url: https://api.lakera.ai/v2
+  description: Lakera Guard global production endpoint
+- url: https://us.api.lakera.ai/v2
+  description: United States regional endpoint
+- url: https://eu-west-1.api.lakera.ai/v2
+  description: European regional endpoint
+security:
+- bearerAuth: []
+tags:
+- name: Policies
+  description: Policy validation (self-hosted)
+paths:
+  /policies/health:
+    get:
+      tags:
+      - Policies
+      operationId: policiesHealth
+      summary: Validate policy configuration (self-hosted)
+      responses:
+        '200':
+          description: Policy configuration is valid
+  /policies/lint:
+    post:
+      tags:
+      - Policies
+      operationId: policiesLint
+      summary: Lint a policy file (self-hosted)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+              description: Policy document to lint
+      responses:
+        '200':
+          description: Lint result
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      description: 'Bearer token issued in the Lakera dashboard. Header format: `Authorization: Bearer ${LAKERA_GUARD_API_KEY}`. Self-hosted deployments may run without authentication.'

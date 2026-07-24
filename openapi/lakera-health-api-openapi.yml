@@ -1,0 +1,57 @@
+openapi: 3.1.0
+info:
+  title: Lakera Guard Health API
+  description: Lakera Guard is an AI security API that screens text content sent to and received from large language models. It detects prompt injection, jailbreaks, PII, unsafe content, and policy violations, returning flagged decisions and detailed detector results. Authentication uses a bearer token issued in the Lakera dashboard. Self-hosted deployments expose additional policy management and Kubernetes probe endpoints.
+  version: '2'
+  contact:
+    name: Lakera
+    url: https://docs.lakera.ai/docs/api
+servers:
+- url: https://api.lakera.ai/v2
+  description: Lakera Guard global production endpoint
+- url: https://us.api.lakera.ai/v2
+  description: United States regional endpoint
+- url: https://eu-west-1.api.lakera.ai/v2
+  description: European regional endpoint
+security:
+- bearerAuth: []
+tags:
+- name: Health
+  description: Kubernetes-style health and lifecycle probes (self-hosted)
+paths:
+  /startupz:
+    get:
+      tags:
+      - Health
+      operationId: startupProbe
+      summary: Kubernetes startup probe (self-hosted)
+      security: []
+      responses:
+        '200':
+          description: Started
+  /readyz:
+    get:
+      tags:
+      - Health
+      operationId: readinessProbe
+      summary: Kubernetes readiness probe (self-hosted)
+      security: []
+      responses:
+        '200':
+          description: Ready
+  /livez:
+    get:
+      tags:
+      - Health
+      operationId: livenessProbe
+      summary: Kubernetes liveness probe (self-hosted)
+      security: []
+      responses:
+        '200':
+          description: Live
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      description: 'Bearer token issued in the Lakera dashboard. Header format: `Authorization: Bearer ${LAKERA_GUARD_API_KEY}`. Self-hosted deployments may run without authentication.'

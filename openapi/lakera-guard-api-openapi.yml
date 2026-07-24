@@ -1,0 +1,149 @@
+openapi: 3.1.0
+info:
+  title: Lakera Guard API
+  description: Lakera Guard is an AI security API that screens text content sent to and received from large language models. It detects prompt injection, jailbreaks, PII, unsafe content, and policy violations, returning flagged decisions and detailed detector results. Authentication uses a bearer token issued in the Lakera dashboard. Self-hosted deployments expose additional policy management and Kubernetes probe endpoints.
+  version: '2'
+  contact:
+    name: Lakera
+    url: https://docs.lakera.ai/docs/api
+servers:
+- url: https://api.lakera.ai/v2
+  description: Lakera Guard global production endpoint
+- url: https://us.api.lakera.ai/v2
+  description: United States regional endpoint
+- url: https://eu-west-1.api.lakera.ai/v2
+  description: European regional endpoint
+security:
+- bearerAuth: []
+tags:
+- name: Guard
+  description: Screen prompts and model responses for threats
+paths:
+  /guard:
+    post:
+      tags:
+      - Guard
+      operationId: guardScreen
+      summary: Screen text content for threats
+      description: Submit messages to be screened. Lakera Guard returns a flagged decision when prompt injection, jailbreak, PII, unsafe content, or other policy violations are detected.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GuardRequest'
+      responses:
+        '200':
+          description: Screening result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GuardResponse'
+        '401':
+          description: Missing or invalid bearer token
+        '422':
+          description: Validation error
+  /guard/results:
+    post:
+      tags:
+      - Guard
+      operationId: guardResults
+      summary: Retrieve detailed detector results
+      description: Returns the per-detector breakdown that informed a Guard decision, useful for debugging policies and tuning thresholds.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GuardRequest'
+      responses:
+        '200':
+          description: Detector results
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GuardResultsResponse'
+        '401':
+          description: Missing or invalid bearer token
+components:
+  schemas:
+    GuardRequest:
+      type: object
+      required:
+      - messages
+      properties:
+        messages:
+          type: array
+          description: Conversation messages to screen
+          items:
+            $ref: '#/components/schemas/GuardMessage'
+        project_id:
+          type: string
+          description: Optional project identifier used to scope policies
+        policy_id:
+          type: string
+          description: Optional policy identifier to apply
+        breakdown:
+          type: boolean
+          description: When true return per-detector results
+        metadata:
+          type: object
+          additionalProperties: true
+          description: Optional caller-supplied metadata
+    GuardMessage:
+      type: object
+      required:
+      - role
+      - content
+      properties:
+        role:
+          type: string
+          description: Role of the message author (for example system, user, assistant)
+          enum:
+          - system
+          - user
+          - assistant
+          - tool
+        content:
+          type: string
+          description: Message text to screen
+    GuardResponse:
+      type: object
+      properties:
+        flagged:
+          type: boolean
+          description: Whether the input was flagged as a threat
+        payload:
+          type: object
+          additionalProperties: true
+          description: Policy decision payload
+        dev_info:
+          type: object
+          additionalProperties: true
+          description: Diagnostic information (when enabled)
+    GuardResultsResponse:
+      type: object
+      properties:
+        results:
+          type: array
+          description: Per-detector results
+          items:
+            type: object
+            properties:
+              detector_type:
+                type: string
+              detected:
+                type: boolean
+              detector_id:
+                type: string
+              message_id:
+                type: string
+              start:
+                type: integer
+              end:
+                type: integer
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      description: 'Bearer token issued in the Lakera dashboard. Header format: `Authorization: Bearer ${LAKERA_GUARD_API_KEY}`. Self-hosted deployments may run without authentication.'
