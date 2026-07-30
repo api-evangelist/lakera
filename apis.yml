@@ -2,7 +2,20 @@ aid: lakera
 url: https://raw.githubusercontent.com/api-evangelist/lakera/refs/heads/main/apis.yml
 name: Lakera
 type: Index
-image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/apis-json-logo.jpg
+accessModel:
+  pricing: free
+  onboarding: self-serve
+  trial: false
+  try_now: true
+  public: false
+  label: Free · Self-serve signup
+  confidence: high
+  source:
+  - plans
+  - authentication
+  generated: '2026-07-22'
+  method: derived
+image: https://kinlane-images.s3.amazonaws.com/shared/apis-json/icons/lakera.png
 tags:
 - AI Security
 - LLM Security
@@ -36,11 +49,13 @@ apis:
     type: GettingStarted
   - url: https://platform.lakera.ai/docs/changelog
     type: ChangeLog
-  description: Lakera Guard is a low-latency screening API that inspects text content sent to or from LLMs and flags threats
-    including prompt injection, jailbreaks, PII, profanity, and policy violations. The /guard endpoint returns a flagged
-    decision plus optional detector breakdowns via /guard/results, and the platform exposes /policies and /projects endpoints
-    for managing detection logic. Available as a managed SaaS at api.lakera.ai/v2 with regional endpoints (US, EU, APAC)
-    and as a self-hosted deployment for regulated environments.
+  description: >-
+    Lakera Guard is a low-latency screening API that inspects text content sent to or from LLMs and flags
+    threats including prompt injection, jailbreaks, PII, profanity, and policy violations. The /guard
+    endpoint returns a flagged decision plus optional detector breakdowns via /guard/results, and the
+    platform exposes /policies and /projects endpoints for managing detection logic. Available as a managed
+    SaaS at api.lakera.ai/v2 with regional endpoints (US, EU, APAC) and as a self-hosted deployment for
+    regulated environments.
 - aid: lakera:lakera-red
   name: Lakera Red
   tags:
@@ -52,9 +67,11 @@ apis:
   properties:
   - url: https://www.lakera.ai/ai-red-teaming
     type: Documentation
-  description: Lakera Red is an automated red teaming product that probes GenAI applications for jailbreaks, prompt injection,
-    data leakage, and other adversarial failures, then produces a risk-based remediation report. Designed for security teams
-    evaluating AI applications prior to production deployment and for ongoing assurance of agentic systems.
+  description: >-
+    Lakera Red is an automated red teaming product that probes GenAI applications for jailbreaks, prompt
+    injection, data leakage, and other adversarial failures, then produces a risk-based remediation report.
+    Designed for security teams evaluating AI applications prior to production deployment and for ongoing
+    assurance of agentic systems.
 - aid: lakera:gandalf
   name: Gandalf
   tags:
@@ -66,9 +83,38 @@ apis:
   properties:
   - url: https://gandalf.lakera.ai/
     type: Documentation
-  description: Gandalf is Lakera's free interactive game that teaches prompt injection by challenging players to extract
-    a secret from an LLM across progressively harder defenses. It has become a primary research and training environment
-    for the prompt injection community and a public funnel into the Lakera Guard ecosystem.
+  description: >-
+    Gandalf is Lakera's free interactive game that teaches prompt injection by challenging players to
+    extract a secret from an LLM across progressively harder defenses. It has become a primary research
+    and training environment for the prompt injection community and a public funnel into the Lakera Guard
+    ecosystem.
+- aid: lakera:lakera-guard-api
+  name: Lakera Guard API
+  description: Screen prompts and model responses for threats
+  humanURL: https://docs.lakera.ai/docs/api
+  tags:
+  - Guard
+  properties:
+  - type: OpenAPI
+    url: openapi/lakera-guard-api-openapi.yml
+- aid: lakera:lakera-health-api
+  name: Lakera Health API
+  description: Kubernetes-style health and lifecycle probes (self-hosted)
+  humanURL: https://docs.lakera.ai/docs/api
+  tags:
+  - Health
+  properties:
+  - type: OpenAPI
+    url: openapi/lakera-health-api-openapi.yml
+- aid: lakera:lakera-policies-api
+  name: Lakera Policies API
+  description: Policy validation (self-hosted)
+  humanURL: https://docs.lakera.ai/docs/api
+  tags:
+  - Policies
+  properties:
+  - type: OpenAPI
+    url: openapi/lakera-policies-api-openapi.yml
 common:
 - type: AgenticAccess
   url: agentic-access/lakera-agentic-access.yml
