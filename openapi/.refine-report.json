@@ -1,0 +1,18 @@
+{
+  "provider": "lakera",
+  "sources": [
+    "lakera-guard-api-openapi.yml",
+    "lakera-health-api-openapi.yml",
+    "lakera-policies-api-openapi.yml"
+  ],
+  "outputs": [
+    "lakera-guard-api-openapi.yml",
+    "lakera-health-api-openapi.yml",
+    "lakera-policies-api-openapi.yml"
+  ],
+  "archived": [],
+  "errors": [],
+  "warnings": [],
+  "notes": [],
+  "skipped": []
+}
