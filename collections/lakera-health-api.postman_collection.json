@@ -1,0 +1,236 @@
+{
+  "item": [
+    {
+      "id": "8d8be7ac-ddb6-4e7a-b7c4-09db5b1f0fff",
+      "name": "Health",
+      "description": {
+        "content": "Kubernetes-style health and lifecycle probes (self-hosted)",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "0db5c528-7c30-428f-9de2-f8110d3ca9ce",
+          "name": "Kubernetes startup probe (self-hosted)",
+          "request": {
+            "name": "Kubernetes startup probe (self-hosted)",
+            "description": {},
+            "url": {
+              "path": [
+                "startupz"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "76237ac0-47c1-43f8-9a49-b15cfec4d6af",
+              "name": "Started",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "startupz"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "e08c2f11-f817-43b3-b832-7e9d18456176",
+          "name": "Kubernetes readiness probe (self-hosted)",
+          "request": {
+            "name": "Kubernetes readiness probe (self-hosted)",
+            "description": {},
+            "url": {
+              "path": [
+                "readyz"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "d9607ae9-ea53-44cc-9f2f-15aae08901e7",
+              "name": "Ready",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "readyz"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "69739966-633d-42b5-bfa5-9a53947c74e6",
+          "name": "Kubernetes liveness probe (self-hosted)",
+          "request": {
+            "name": "Kubernetes liveness probe (self-hosted)",
+            "description": {},
+            "url": {
+              "path": [
+                "livez"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "method": "GET",
+            "auth": null
+          },
+          "response": [
+            {
+              "id": "5618dc23-1705-4bb7-8cbc-cbe179160833",
+              "name": "Live",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "livez"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "GET",
+                "body": {}
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "type": "string",
+      "value": "https://api.lakera.ai/v2",
+      "key": "baseUrl"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{bearerToken}}"
+      }
+    ]
+  },
+  "info": {
+    "_postman_id": "5c9fb402-2ec8-4283-8788-043eab271064",
+    "name": "Lakera Guard Health API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": {
+      "content": "Lakera Guard is an AI security API that screens text content sent to and received from large language models. It detects prompt injection, jailbreaks, PII, unsafe content, and policy violations, returning flagged decisions and detailed detector results. Authentication uses a bearer token issued in the Lakera dashboard. Self-hosted deployments expose additional policy management and Kubernetes probe endpoints.\n\nContact Support:\n Name: Lakera",
+      "type": "text/plain"
+    }
+  }
+}

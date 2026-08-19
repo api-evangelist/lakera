@@ -1,0 +1,50 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Lakera Guard Policies API",
+    "version": "2"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Policies",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Validate policy configuration (self-hosted)",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.lakera.ai/v2/policies/health"
+          },
+          "docs": "Validate policy configuration (self-hosted)"
+        },
+        {
+          "info": {
+            "name": "Lint a policy file (self-hosted)",
+            "type": "http"
+          },
+          "http": {
+            "method": "POST",
+            "url": "https://api.lakera.ai/v2/policies/lint",
+            "body": {
+              "type": "json",
+              "data": "{}"
+            }
+          },
+          "docs": "Lint a policy file (self-hosted)"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

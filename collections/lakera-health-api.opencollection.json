@@ -1,0 +1,57 @@
+{
+  "opencollection": "1.0.0",
+  "info": {
+    "name": "Lakera Guard Health API",
+    "version": "2"
+  },
+  "request": {
+    "auth": {
+      "type": "bearer",
+      "token": "{{bearerToken}}"
+    }
+  },
+  "items": [
+    {
+      "info": {
+        "name": "Health",
+        "type": "folder"
+      },
+      "items": [
+        {
+          "info": {
+            "name": "Kubernetes startup probe (self-hosted)",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.lakera.ai/v2/startupz"
+          },
+          "docs": "Kubernetes startup probe (self-hosted)"
+        },
+        {
+          "info": {
+            "name": "Kubernetes readiness probe (self-hosted)",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.lakera.ai/v2/readyz"
+          },
+          "docs": "Kubernetes readiness probe (self-hosted)"
+        },
+        {
+          "info": {
+            "name": "Kubernetes liveness probe (self-hosted)",
+            "type": "http"
+          },
+          "http": {
+            "method": "GET",
+            "url": "https://api.lakera.ai/v2/livez"
+          },
+          "docs": "Kubernetes liveness probe (self-hosted)"
+        }
+      ]
+    }
+  ],
+  "bundled": true
+}

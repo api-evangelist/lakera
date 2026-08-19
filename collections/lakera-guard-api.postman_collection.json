@@ -1,0 +1,383 @@
+{
+  "item": [
+    {
+      "id": "141403e2-4cb1-42ce-9223-53fd8e115a1a",
+      "name": "Guard",
+      "description": {
+        "content": "Screen prompts and model responses for threats",
+        "type": "text/plain"
+      },
+      "item": [
+        {
+          "id": "7b0f5c79-7b5f-4d6c-b32e-8f86e44fa9e5",
+          "name": "Screen text content for threats",
+          "request": {
+            "name": "Screen text content for threats",
+            "description": {
+              "content": "Submit messages to be screened. Lakera Guard returns a flagged decision when prompt injection, jailbreak, PII, unsafe content, or other policy violations are detected.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "guard"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"messages\": [\n    {\n      \"role\": \"<string>\",\n      \"content\": \"<string>\"\n    },\n    {\n      \"role\": \"<string>\",\n      \"content\": \"<string>\"\n    }\n  ],\n  \"project_id\": \"<string>\",\n  \"policy_id\": \"<string>\",\n  \"breakdown\": \"<boolean>\",\n  \"metadata\": {\n    \"key_0\": 5546,\n    \"key_1\": true\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "61b7ccda-06e0-4360-913d-2bb1a257b37d",
+              "name": "Screening result",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "guard"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"string\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"string\"\n    }\n  ],\n  \"project_id\": \"<string>\",\n  \"policy_id\": \"<string>\",\n  \"breakdown\": \"<boolean>\",\n  \"metadata\": {\n    \"key_0\": \"string\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"flagged\": true,\n  \"payload\": {\n    \"key_0\": true\n  },\n  \"dev_info\": {\n    \"key_0\": true,\n    \"key_1\": \"string\",\n    \"key_2\": \"string\"\n  }\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "049a05ac-2d23-4d88-9f9c-bd7c66988e54",
+              "name": "Missing or invalid bearer token",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "guard"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"string\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"string\"\n    }\n  ],\n  \"project_id\": \"<string>\",\n  \"policy_id\": \"<string>\",\n  \"breakdown\": \"<boolean>\",\n  \"metadata\": {\n    \"key_0\": \"string\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "id": "165d146b-7caf-459f-bf1b-7a6530c46ab6",
+              "name": "Validation error",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "guard"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"string\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"string\"\n    }\n  ],\n  \"project_id\": \"<string>\",\n  \"policy_id\": \"<string>\",\n  \"breakdown\": \"<boolean>\",\n  \"metadata\": {\n    \"key_0\": \"string\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Unprocessable Entity (WebDAV) (RFC 4918)",
+              "code": 422,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        },
+        {
+          "id": "217257cc-4dd9-4122-aab4-ef232cee0fcd",
+          "name": "Retrieve detailed detector results",
+          "request": {
+            "name": "Retrieve detailed detector results",
+            "description": {
+              "content": "Returns the per-detector breakdown that informed a Guard decision, useful for debugging policies and tuning thresholds.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "guard",
+                "results"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "auth": null,
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"messages\": [\n    {\n      \"role\": \"<string>\",\n      \"content\": \"<string>\"\n    },\n    {\n      \"role\": \"<string>\",\n      \"content\": \"<string>\"\n    }\n  ],\n  \"project_id\": \"<string>\",\n  \"policy_id\": \"<string>\",\n  \"breakdown\": \"<boolean>\",\n  \"metadata\": {\n    \"key_0\": 5546,\n    \"key_1\": true\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "31d7b8c6-cc4e-4c87-a405-fcb303258adf",
+              "name": "Detector results",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "guard",
+                    "results"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"string\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"string\"\n    }\n  ],\n  \"project_id\": \"<string>\",\n  \"policy_id\": \"<string>\",\n  \"breakdown\": \"<boolean>\",\n  \"metadata\": {\n    \"key_0\": \"string\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"results\": [\n    {\n      \"detector_type\": \"string\",\n      \"detected\": true,\n      \"detector_id\": \"string\",\n      \"message_id\": \"string\",\n      \"start\": 4051,\n      \"end\": 4727\n    },\n    {\n      \"detector_type\": \"string\",\n      \"detected\": true,\n      \"detector_id\": \"string\",\n      \"message_id\": \"string\",\n      \"start\": 5389,\n      \"end\": 1504\n    }\n  ]\n}",
+              "cookie": [],
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "id": "e247af43-d5c5-4366-8bba-3c413b519617",
+              "name": "Missing or invalid bearer token",
+              "originalRequest": {
+                "url": {
+                  "path": [
+                    "guard",
+                    "results"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "description": {
+                      "content": "Added as a part of security scheme: bearer",
+                      "type": "text/plain"
+                    },
+                    "key": "Authorization",
+                    "value": "Bearer <token>"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"string\"\n    },\n    {\n      \"role\": \"assistant\",\n      \"content\": \"string\"\n    }\n  ],\n  \"project_id\": \"<string>\",\n  \"policy_id\": \"<string>\",\n  \"breakdown\": \"<boolean>\",\n  \"metadata\": {\n    \"key_0\": \"string\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain"
+                }
+              ],
+              "body": "",
+              "cookie": [],
+              "_postman_previewlanguage": "text"
+            }
+          ],
+          "event": [],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          }
+        }
+      ],
+      "event": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "type": "string",
+      "value": "https://api.lakera.ai/v2",
+      "key": "baseUrl"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{bearerToken}}"
+      }
+    ]
+  },
+  "info": {
+    "_postman_id": "51643c75-f515-43f9-ba82-4c4496ed548e",
+    "name": "Lakera Guard API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": {
+      "content": "Lakera Guard is an AI security API that screens text content sent to and received from large language models. It detects prompt injection, jailbreaks, PII, unsafe content, and policy violations, returning flagged decisions and detailed detector results. Authentication uses a bearer token issued in the Lakera dashboard. Self-hosted deployments expose additional policy management and Kubernetes probe endpoints.\n\nContact Support:\n Name: Lakera",
+      "type": "text/plain"
+    }
+  }
+}
