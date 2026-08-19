@@ -31,7 +31,7 @@ description: Lakera is an AI security company building runtime defenses for gene
   training game that has driven much of the prompt injection research community.
 created: '2026-05-23'
 modified: '2026-05-23'
-specificationVersion: '0.19'
+specificationVersion: '0.23'
 apis:
 - aid: lakera:lakera-guard
   name: Lakera Guard
