@@ -23,6 +23,13 @@ tags:
 - Guardrails
 - Red Teaming
 - GenAI
+tags_raw:
+- AI Security
+- LLM Security
+- Prompt Injection
+- Guardrails
+- Red Teaming
+- GenAI
 - API
 description: Lakera is an AI security company building runtime defenses for generative AI applications. Its flagship Lakera
   Guard API screens prompts and responses for prompt injection, jailbreaks, PII leakage, unsafe content, and policy violations,
