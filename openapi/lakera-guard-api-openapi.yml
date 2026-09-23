@@ -1,4 +1,4 @@
-openapi: 3.1.0
+openapi: 3.2.0
 info:
   title: Lakera Guard API
   description: Lakera Guard is an AI security API that screens text content sent to and received from large language models. It detects prompt injection, jailbreaks, PII, unsafe content, and policy violations, returning flagged decisions and detailed detector results. Authentication uses a bearer token issued in the Lakera dashboard. Self-hosted deployments expose additional policy management and Kubernetes probe endpoints.
@@ -67,6 +67,41 @@ paths:
           description: Missing or invalid bearer token
 components:
   schemas:
+    GuardResultsResponse:
+      type: object
+      properties:
+        results:
+          type: array
+          description: Per-detector results
+          items:
+            type: object
+            properties:
+              detector_type:
+                type: string
+              detected:
+                type: boolean
+              detector_id:
+                type: string
+              message_id:
+                type: string
+              start:
+                type: integer
+              end:
+                type: integer
+    GuardResponse:
+      type: object
+      properties:
+        flagged:
+          type: boolean
+          description: Whether the input was flagged as a threat
+        payload:
+          type: object
+          additionalProperties: true
+          description: Policy decision payload
+        dev_info:
+          type: object
+          additionalProperties: true
+          description: Diagnostic information (when enabled)
     GuardRequest:
       type: object
       required:
@@ -107,41 +142,6 @@ components:
         content:
           type: string
           description: Message text to screen
-    GuardResponse:
-      type: object
-      properties:
-        flagged:
-          type: boolean
-          description: Whether the input was flagged as a threat
-        payload:
-          type: object
-          additionalProperties: true
-          description: Policy decision payload
-        dev_info:
-          type: object
-          additionalProperties: true
-          description: Diagnostic information (when enabled)
-    GuardResultsResponse:
-      type: object
-      properties:
-        results:
-          type: array
-          description: Per-detector results
-          items:
-            type: object
-            properties:
-              detector_type:
-                type: string
-              detected:
-                type: boolean
-              detector_id:
-                type: string
-              message_id:
-                type: string
-              start:
-                type: integer
-              end:
-                type: integer
   securitySchemes:
     bearerAuth:
       type: http
