@@ -67,27 +67,6 @@ paths:
           description: Missing or invalid bearer token
 components:
   schemas:
-    GuardResultsResponse:
-      type: object
-      properties:
-        results:
-          type: array
-          description: Per-detector results
-          items:
-            type: object
-            properties:
-              detector_type:
-                type: string
-              detected:
-                type: boolean
-              detector_id:
-                type: string
-              message_id:
-                type: string
-              start:
-                type: integer
-              end:
-                type: integer
     GuardResponse:
       type: object
       properties:
@@ -102,6 +81,23 @@ components:
           type: object
           additionalProperties: true
           description: Diagnostic information (when enabled)
+    GuardMessage:
+      type: object
+      required:
+      - role
+      - content
+      properties:
+        role:
+          type: string
+          description: Role of the message author (for example system, user, assistant)
+          enum:
+          - system
+          - user
+          - assistant
+          - tool
+        content:
+          type: string
+          description: Message text to screen
     GuardRequest:
       type: object
       required:
@@ -125,23 +121,27 @@ components:
           type: object
           additionalProperties: true
           description: Optional caller-supplied metadata
-    GuardMessage:
+    GuardResultsResponse:
       type: object
-      required:
-      - role
-      - content
       properties:
-        role:
-          type: string
-          description: Role of the message author (for example system, user, assistant)
-          enum:
-          - system
-          - user
-          - assistant
-          - tool
-        content:
-          type: string
-          description: Message text to screen
+        results:
+          type: array
+          description: Per-detector results
+          items:
+            type: object
+            properties:
+              detector_type:
+                type: string
+              detected:
+                type: boolean
+              detector_id:
+                type: string
+              message_id:
+                type: string
+              start:
+                type: integer
+              end:
+                type: integer
   securitySchemes:
     bearerAuth:
       type: http
