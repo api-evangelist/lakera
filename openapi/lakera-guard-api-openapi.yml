@@ -67,6 +67,29 @@ paths:
           description: Missing or invalid bearer token
 components:
   schemas:
+    GuardRequest:
+      type: object
+      required:
+      - messages
+      properties:
+        messages:
+          type: array
+          description: Conversation messages to screen
+          items:
+            $ref: '#/components/schemas/GuardMessage'
+        project_id:
+          type: string
+          description: Optional project identifier used to scope policies
+        policy_id:
+          type: string
+          description: Optional policy identifier to apply
+        breakdown:
+          type: boolean
+          description: When true return per-detector results
+        metadata:
+          type: object
+          additionalProperties: true
+          description: Optional caller-supplied metadata
     GuardResponse:
       type: object
       properties:
@@ -98,29 +121,6 @@ components:
         content:
           type: string
           description: Message text to screen
-    GuardRequest:
-      type: object
-      required:
-      - messages
-      properties:
-        messages:
-          type: array
-          description: Conversation messages to screen
-          items:
-            $ref: '#/components/schemas/GuardMessage'
-        project_id:
-          type: string
-          description: Optional project identifier used to scope policies
-        policy_id:
-          type: string
-          description: Optional policy identifier to apply
-        breakdown:
-          type: boolean
-          description: When true return per-detector results
-        metadata:
-          type: object
-          additionalProperties: true
-          description: Optional caller-supplied metadata
     GuardResultsResponse:
       type: object
       properties:
