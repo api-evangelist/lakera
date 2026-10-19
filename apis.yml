@@ -112,24 +112,6 @@ apis:
     extract a secret from an LLM across progressively harder defenses. It has become a primary research
     and training environment for the prompt injection community and a public funnel into the Lakera Guard
     ecosystem.
-- aid: lakera:lakera-guard-api
-  name: Lakera Guard API
-  description: Screen prompts and model responses for threats
-  humanURL: https://docs.lakera.ai/docs/api
-  tags:
-  - Guard
-  properties:
-  - type: OpenAPI
-    url: openapi/lakera-guard-api-openapi.yml
-- aid: lakera:lakera-health-api
-  name: Lakera Health API
-  description: Kubernetes-style health and lifecycle probes (self-hosted)
-  humanURL: https://docs.lakera.ai/docs/api
-  tags:
-  - Health
-  properties:
-  - type: OpenAPI
-    url: openapi/lakera-health-api-openapi.yml
 - aid: lakera:lakera-policies-api
   name: Lakera Policies API
   description: Policy validation (self-hosted)
@@ -139,6 +121,33 @@ apis:
   properties:
   - type: OpenAPI
     url: openapi/lakera-policies-api-openapi.yml
+- aid: lakera:lakera-analytics-api
+  name: Lakera Analytics API
+  description: The analytics API from Lakera — 1 operation(s) for analytics.
+  humanURL: https://docs.lakera.ai/docs/api
+  tags:
+  - analytics
+  properties:
+  - type: OpenAPI
+    url: openapi/lakera-analytics-api-openapi.yml
+- aid: lakera:lakera-logs-api
+  name: Lakera Logs API
+  description: The logs API from Lakera — 1 operation(s) for logs.
+  humanURL: https://docs.lakera.ai/docs/api
+  tags:
+  - logs
+  properties:
+  - type: OpenAPI
+    url: openapi/lakera-logs-api-openapi.yml
+- aid: lakera:lakera-projects-api
+  name: Lakera Projects API
+  description: The projects API from Lakera — 2 operation(s) for projects.
+  humanURL: https://docs.lakera.ai/docs/api
+  tags:
+  - projects
+  properties:
+  - type: OpenAPI
+    url: openapi/lakera-projects-api-openapi.yml
 common:
 - type: Plans
   url: plans/lakera-plans-pricing.yml

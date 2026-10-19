@@ -4,9 +4,10 @@
     "_original/lakera-openapi.yml"
   ],
   "outputs": [
-    "lakera-guard-api-openapi.yml",
-    "lakera-health-api-openapi.yml",
-    "lakera-policies-api-openapi.yml"
+    "lakera-analytics-api-openapi.yml",
+    "lakera-logs-api-openapi.yml",
+    "lakera-policies-api-openapi.yml",
+    "lakera-projects-api-openapi.yml"
   ],
   "archived": [],
   "errors": [],
@@ -14,11 +15,7 @@
   "notes": [
     "sourced from openapi/_original/ (1 archived document(s)); previously refined output at the top level was skipped rather than re-split",
     "lakera-openapi.yml: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
-    "apis.yml register: already-registered"
+    "apis.yml register: written (+3 apis, 7 total)"
   ],
-  "skipped": [
-    "lakera-guard-api-openapi.yml: previously refined output, superseded by openapi/_original/",
-    "lakera-health-api-openapi.yml: previously refined output, superseded by openapi/_original/",
-    "lakera-policies-api-openapi.yml: previously refined output, superseded by openapi/_original/"
-  ]
+  "skipped": []
 }

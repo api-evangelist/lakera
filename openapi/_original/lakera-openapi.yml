@@ -1,223 +1,1335 @@
 openapi: 3.1.0
 info:
-  title: Lakera Guard API
-  description: >-
-    Lakera Guard is an AI security API that screens text content sent to and
-    received from large language models. It detects prompt injection,
-    jailbreaks, PII, unsafe content, and policy violations, returning flagged
-    decisions and detailed detector results. Authentication uses a bearer
-    token issued in the Lakera dashboard. Self-hosted deployments expose
-    additional policy management and Kubernetes probe endpoints.
-  version: '2'
-  contact:
-    name: Lakera
-    url: https://docs.lakera.ai/docs/api
-servers:
-  - url: https://api.lakera.ai/v2
-    description: Lakera Guard global production endpoint
-  - url: https://us.api.lakera.ai/v2
-    description: United States regional endpoint
-  - url: https://eu-west-1.api.lakera.ai/v2
-    description: European regional endpoint
-security:
-  - bearerAuth: []
-tags:
-  - name: Guard
-    description: Screen prompts and model responses for threats
-  - name: Policies
-    description: Policy validation (self-hosted)
-  - name: Health
-    description: Kubernetes-style health and lifecycle probes (self-hosted)
+  title: Platform API
+  version: 1.0.0
 paths:
-  /guard:
+  /v1/policies:
     post:
+      operationId: policies_createPolicy
+      summary: Create policy
+      description: Create a new policy configuration
       tags:
-        - Guard
-      operationId: guardScreen
-      summary: Screen text content for threats
-      description: >-
-        Submit messages to be screened. Lakera Guard returns a flagged
-        decision when prompt injection, jailbreak, PII, unsafe content, or
-        other policy violations are detected.
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/GuardRequest'
+        - policies
       responses:
         '200':
-          description: Screening result
+          description: Policy created successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GuardResponse'
-        '401':
-          description: Missing or invalid bearer token
+                $ref: '#/components/schemas/PolicyResponse'
+        '400':
+          description: >
+            The request could not be processed. Returned when a policy with the same name already exists in your
+            organization.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: >
+            Your API key is read-only and this endpoint writes, Policies V2 is not enabled for your organization, or
+            your organization has reached its maximum number of policies.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
         '422':
-          description: Validation error
-  /guard/results:
-    post:
-      tags:
-        - Guard
-      operationId: guardResults
-      summary: Retrieve detailed detector results
-      description: >-
-        Returns the per-detector breakdown that informed a Guard decision,
-        useful for debugging policies and tuning thresholds.
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/GuardRequest'
-      responses:
-        '200':
-          description: Detector results
+          description: The policy failed validation
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GuardResultsResponse'
-        '401':
-          description: Missing or invalid bearer token
-  /policies/health:
-    get:
-      tags:
-        - Policies
-      operationId: policiesHealth
-      summary: Validate policy configuration (self-hosted)
-      responses:
-        '200':
-          description: Policy configuration is valid
-  /policies/lint:
-    post:
-      tags:
-        - Policies
-      operationId: policiesLint
-      summary: Lint a policy file (self-hosted)
+                $ref: '#/components/schemas/Error'
       requestBody:
-        required: true
         content:
           application/json:
             schema:
-              type: object
-              additionalProperties: true
-              description: Policy document to lint
-      responses:
-        '200':
-          description: Lint result
-  /startupz:
+              $ref: '#/components/schemas/PolicyRequest'
+      security:
+        - bearerAuth: []
+  /v1/policies/{policyId}:
     get:
+      operationId: policies_getPolicy
+      summary: Get policy
+      description: Retrieve a single policy, including the projects currently using it
       tags:
-        - Health
-      operationId: startupProbe
-      summary: Kubernetes startup probe (self-hosted)
-      security: []
+        - policies
+      parameters:
+        - name: policyId
+          in: path
+          required: true
+          schema:
+            type: string
       responses:
         '200':
-          description: Started
-  /readyz:
+          description: Policy details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PolicyReadResponse'
+        '403':
+          description: >
+            Your API key is read-only and this endpoint writes, Policies V2 is not enabled for your organization, or
+            your organization has reached its maximum number of policies.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: No policy with this ID exists in your organization
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - bearerAuth: []
+    put:
+      operationId: policies_updatePolicy
+      summary: Update policy
+      description: >
+        Replace a policy configuration. The request body is the complete policy — any detector or custom guardrail
+        omitted from the request is removed from the policy. A successful update creates a new policy version.
+      tags:
+        - policies
+      parameters:
+        - name: policyId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Policy updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PolicyResponse'
+        '400':
+          description: >
+            The request could not be processed. Returned when a policy with the same name already exists in your
+            organization.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: >
+            Your API key is read-only and this endpoint writes, Policies V2 is not enabled for your organization, or
+            your organization has reached its maximum number of policies.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: No policy with this ID exists in your organization
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: The policy failed validation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PolicyRequest'
+      security:
+        - bearerAuth: []
+    delete:
+      operationId: policies_deletePolicy
+      summary: Delete policy
+      description: |
+        Delete a policy. A policy cannot be deleted while any project is assigned to it — reassign those projects first.
+      tags:
+        - policies
+      parameters:
+        - name: policyId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Policy deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PolicyResponse'
+        '403':
+          description: >
+            Your API key is read-only and this endpoint writes, Policies V2 is not enabled for your organization, or
+            your organization has reached its maximum number of policies.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: No policy with this ID exists in your organization
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: The policy is still assigned to one or more projects
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - bearerAuth: []
+  /v1-beta/policies:
+    post:
+      operationId: policies_createPolicyV1Beta
+      summary: Create policy (retired)
+      description: >
+        Retired with the launch of Policies V2. Returns `410 Gone` with the message "This endpoint is disabled. Use POST
+        /api/v1/policies instead."
+      tags:
+        - policies
+      responses:
+        '200':
+          description: Successful response
+        '410':
+          description: >
+            This endpoint was retired with the launch of Policies V2. Use the corresponding `/api/v1/policies` endpoint
+            instead.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      deprecated: true
+      security:
+        - bearerAuth: []
+  /v1-beta/policies/{policyId}:
     get:
+      operationId: policies_getPolicyV1Beta
+      summary: Get policy (retired)
+      description: >
+        Retired with the launch of Policies V2. Returns `410 Gone` with the message "This endpoint is disabled. Use GET
+        /api/v1/policies/&lt;policy_id&gt; instead."
       tags:
-        - Health
-      operationId: readinessProbe
-      summary: Kubernetes readiness probe (self-hosted)
-      security: []
+        - policies
+      parameters:
+        - name: policyId
+          in: path
+          required: true
+          schema:
+            type: string
       responses:
         '200':
-          description: Ready
-  /livez:
+          description: Successful response
+        '410':
+          description: >
+            This endpoint was retired with the launch of Policies V2. Use the corresponding `/api/v1/policies` endpoint
+            instead.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      deprecated: true
+      security:
+        - bearerAuth: []
+    put:
+      operationId: policies_updatePolicyV1Beta
+      summary: Update policy (retired)
+      description: >
+        Retired with the launch of Policies V2. Returns `410 Gone` with the message "This endpoint is disabled. Use PUT
+        /api/v1/policies/&lt;policy_id&gt; instead."
+      tags:
+        - policies
+      parameters:
+        - name: policyId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+        '410':
+          description: >
+            This endpoint was retired with the launch of Policies V2. Use the corresponding `/api/v1/policies` endpoint
+            instead.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      deprecated: true
+      security:
+        - bearerAuth: []
+    delete:
+      operationId: policies_deletePolicyV1Beta
+      summary: Delete policy (retired)
+      description: >
+        Retired with the launch of Policies V2. Returns `410 Gone` with the message "This endpoint is disabled. Use
+        DELETE /api/v1/policies/&lt;policy_id&gt; instead."
+      tags:
+        - policies
+      parameters:
+        - name: policyId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+        '410':
+          description: >
+            This endpoint was retired with the launch of Policies V2. Use the corresponding `/api/v1/policies` endpoint
+            instead.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      deprecated: true
+      security:
+        - bearerAuth: []
+  /v1-beta/projects:
+    post:
+      operationId: projects_createProject
+      summary: Create project
+      description: Create a new project
+      tags:
+        - projects
+      responses:
+        '200':
+          description: Project created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Project'
+      security:
+        - bearerAuth: []
+  /v1-beta/projects/{projectId}:
     get:
+      operationId: projects_getProject
+      summary: Get project
+      description: Get a specific project by ID
       tags:
-        - Health
-      operationId: livenessProbe
-      summary: Kubernetes liveness probe (self-hosted)
-      security: []
+        - projects
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          schema:
+            type: string
       responses:
         '200':
-          description: Live
+          description: Project details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+      security:
+        - bearerAuth: []
+    put:
+      operationId: projects_updateProject
+      summary: Update project
+      description: Update a specific project
+      tags:
+        - projects
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Project updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Project'
+      security:
+        - bearerAuth: []
+    delete:
+      operationId: projects_deleteProject
+      summary: Delete project
+      description: Delete a specific project
+      tags:
+        - projects
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Project deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Projects_deleteProject_Response_200'
+      security:
+        - bearerAuth: []
+  /v1-beta/logs:
+    post:
+      operationId: logs_getLogs
+      summary: Get guard logs
+      description: >
+        Retrieve individual Guard request logs for your organization.
+
+
+        Returns up to `limit` logs (default 100, max 1000) ordered by timestamp ascending (oldest first). Only flagged
+        results and message-level results are included in each log entry — unflagged detections are omitted.
+
+
+        **Pagination.** Use `offset` to page through results. When `has_more` is `true` in the response, increment
+        `offset` by `limit` to fetch the next page. For example, to iterate over all logs in a time range with pages of
+        500: fetch with `offset=0`, then `offset=500`, then `offset=1000`, and so on until `has_more` is `false`.
+
+
+        **Filtering.** Narrow results using any combination of these filters:
+
+        - `flagged_only` — only requests where the policy action flagged the request.
+
+        - `detected_only` — only requests where at least one detector fired (includes
+          monitor-mode hits where the policy does not flag).
+
+        - `detector_types` — only requests that triggered one or more of the listed
+          detector types. See the `GetLogsRequest` schema for the list of accepted
+        values
+          and their corresponding display names in the AI Guardrails Dashboard.
+
+
+        **Authentication.** Use a Platform API key from the AI Guardrails Dashboard — not the Guard API key used for
+        inference requests at `api.lakera.ai`.
+
+
+        **Access.** This endpoint is available to select organizations. Contact your Check Point representative to
+        request access. Community users may also reach out to [support@lakera.ai](mailto:support@lakera.ai).
+      tags:
+        - logs
+      responses:
+        '200':
+          description: Guard logs for the requested time range
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetLogsResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: >
+            Access denied. Either the feature is not enabled for your organization, or the query exceeded ClickHouse
+            resource limits — try narrowing the time range.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: >
+            A requested project ID does not belong to your organization. Requests sent without a project are logged
+            under `project-lakera-default` (or `project-lakera-audio-default` for audio), which are always accepted.
+            Archived projects count as found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '421':
+          description: >
+            Your organization's data is stored in a different region than the one that received the request.
+            `https://platform.lakera.ai` serves organizations stored in `eu-west-1`. Send the request to the regional
+            host named in the message, for example `https://us-east-1.platform.lakera.ai`.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GetLogsRequest'
+      security:
+        - bearerAuth: []
+  /v1-beta/analytics:
+    post:
+      operationId: analytics_getAnalytics
+      summary: Get analytics
+      description: >
+        Retrieve aggregated Guard request analytics bucketed by time and project.
+
+
+        The response groups buckets by project. Each bucket covers one `resolution` interval and contains request and
+        detection counts for that interval.
+
+
+        **Authentication.** Use a Platform API key from the AI Guardrails Dashboard — not the Guard API key used for
+        inference requests at `api.lakera.ai`.
+
+
+        **Timestamps.** Both `start_time` and `end_time` must be UTC (use the `Z` or `+00:00` suffix). Sub-minute
+        seconds are silently floored to the nearest minute. After flooring, `start_time` must remain strictly before
+        `end_time`.
+
+
+        **Resolution.** An ISO 8601 duration string: `PT{n}M`, `PT{n}H`, or `P{n}D` where `n` is a positive integer
+        (e.g. `PT15M`, `PT6H`, `P7D`). The time range after flooring must divide evenly by the resolution. The maximum
+        range is 180 days.
+
+
+        **Access.** This endpoint is available to select organizations. Contact your Check Point representative to
+        request access. Community users may also reach out to [support@lakera.ai](mailto:support@lakera.ai).
+      tags:
+        - analytics
+      responses:
+        '200':
+          description: Aggregated analytics bucketed by time and project
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetAnalyticsResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: >
+            Access denied. Either the feature is not enabled for your organization, or the query exceeded ClickHouse
+            resource limits — try narrowing the time range.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: >
+            A requested project ID does not belong to your organization. Requests sent without a project are logged
+            under `project-lakera-default` (or `project-lakera-audio-default` for audio), which are always accepted.
+            Archived projects count as found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '421':
+          description: >
+            Your organization's data is stored in a different region than the one that received the request.
+            `https://platform.lakera.ai` serves organizations stored in `eu-west-1`. Send the request to the regional
+            host named in the message, for example `https://us-east-1.platform.lakera.ai`.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GetAnalyticsRequest'
+      security:
+        - bearerAuth: []
+tags:
+  - name: policies
+  - name: projects
+  - name: logs
+  - name: analytics
+servers:
+  - url: https://platform.lakera.ai/api
+    description: Platform
 components:
+  schemas:
+    PolicyRequestDefaultThreshold:
+      type: string
+      enum:
+        - l1_confident
+        - l2_very_likely
+        - l3_likely
+        - l4_less_likely
+      description: >
+        The confidence level at or above which the policy's detectors flag content. `l1_confident` is the most lenient
+        and `l4_less_likely` the strictest. Thresholds are inclusive — `l2_very_likely` flags on both `l2_very_likely`
+        and `l1_confident` detections.
+      title: PolicyRequestDefaultThreshold
+    DetectorConfigType:
+      type: string
+      enum:
+        - prompt_attack
+        - moderated_content/hate
+        - moderated_content/sexual
+        - moderated_content/profanity
+        - moderated_content/violence
+        - moderated_content/weapons
+        - moderated_content/crime
+        - moderated_content/self_harm
+        - pii/address
+        - pii/credit_card
+        - pii/email
+        - pii/ip_address
+        - pii/name
+        - pii/phone_number
+        - pii/us_social_security_number
+        - pii/iban_code
+        - unknown_links
+        - override_allow
+        - override_deny
+        - tool_risk/payload
+        - tool_risk/create
+        - tool_risk/read
+        - tool_risk/update
+        - tool_risk/delete
+        - tool_risk/untrusted_destination
+        - tool_risk/untrusted_source
+        - dangerous_deviation
+        - tool_access_control
+      description: The detector type
+      title: DetectorConfigType
+    ScreeningLocation:
+      type: string
+      enum:
+        - user::content
+        - assistant::content
+        - assistant::tool_call
+        - tool::content
+        - tool_definition::content
+      description: >
+        Where in the conversation a detector screens.
+
+
+        - `user::content` — content of user messages (model input).
+
+        - `assistant::content` — content of model responses (model output).
+
+        - `assistant::tool_call` — the arguments an agent passes into a tool.
+
+        - `tool::content` — the content a tool returns to the agent.
+
+        - `tool_definition::content` — the tool definitions you expose to the model. Only valid for the `prompt_attack`
+        detector.
+      title: ScreeningLocation
+    DetectorConfigToolAccessAction:
+      type: string
+      enum:
+        - allow
+        - deny
+      description: >
+        Whether `tool_access_list` is an allow list or a deny list. Required when `type` is `tool_access_control`, and
+        not applicable to other types.
+      title: DetectorConfigToolAccessAction
+    DetectorConfigAllowedToolsItems:
+      type: object
+      properties:
+        tool_name:
+          type: string
+          minLength: 1
+          maxLength: 256
+          description: The name of the tool.
+        tool_matcher:
+          type: string
+          minLength: 1
+          maxLength: 20000
+          description: |
+            The tool definition this entry allows. An entry matches only when both the name and the definition match.
+      required:
+        - tool_name
+        - tool_matcher
+      title: DetectorConfigAllowedToolsItems
+    DetectorConfig:
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/DetectorConfigType'
+          description: The detector type
+        location:
+          $ref: '#/components/schemas/ScreeningLocation'
+        allowed_domains:
+          type:
+            - array
+            - 'null'
+          items:
+            type: string
+          description: >
+            A list of trusted domains that should not be flagged by the `unknown_links` detector. Only applicable when
+            `type` is `unknown_links`. Include only the domain name and top-level domain (e.g. "example.com"). Do not
+            include prefixes like "http://" or "www.", or subdomains like "platform.example.com".
+        override_list:
+          type:
+            - array
+            - 'null'
+          items:
+            type: string
+          description: >
+            A list of strings to allow or deny, used to override model flagging decisions. Required when `type` is
+            `override_allow` or `override_deny`, and not applicable to other types. `override_allow` prevents matching
+            content from being flagged; `override_deny` forces matching content to be flagged.
+        tool_access_action:
+          oneOf:
+            - $ref: '#/components/schemas/DetectorConfigToolAccessAction'
+            - type: 'null'
+          description: >
+            Whether `tool_access_list` is an allow list or a deny list. Required when `type` is `tool_access_control`,
+            and not applicable to other types.
+        tool_access_list:
+          type:
+            - array
+            - 'null'
+          items:
+            type: string
+          description: >
+            The tool names to allow or deny, per `tool_access_action`. Required when `type` is `tool_access_control`,
+            and not applicable to other types.
+        allowed_tools:
+          type:
+            - array
+            - 'null'
+          items:
+            $ref: '#/components/schemas/DetectorConfigAllowedToolsItems'
+          description: >
+            Tool definitions that the `prompt_attack` detector should not flag when screening
+            `tool_definition::content`. Only applicable when `type` is `prompt_attack`. Each entry must be unique on
+            (`tool_name`, `tool_matcher`).
+      required:
+        - type
+        - location
+      description: >
+        A single detector, screening one location. To run the same detector on more than one location, add one entry per
+        location.
+      title: DetectorConfig
+    PolicyRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+          description: >
+            A descriptive name for the policy. Leading and trailing whitespace is stripped. Must be unique within your
+            organization.
+        default_threshold:
+          $ref: '#/components/schemas/PolicyRequestDefaultThreshold'
+          description: >
+            The confidence level at or above which the policy's detectors flag content. `l1_confident` is the most
+            lenient and `l4_less_likely` the strictest. Thresholds are inclusive — `l2_very_likely` flags on both
+            `l2_very_likely` and `l1_confident` detections.
+        detectors:
+          type: array
+          items:
+            $ref: '#/components/schemas/DetectorConfig'
+          description: |
+            The detectors to run. Each entry pairs a detector `type` with the `location` in the conversation it screens.
+        custom_guardrail_ids:
+          type: array
+          items:
+            type: string
+            pattern: ^custom-guardrail-.+
+          description: IDs of the custom guardrails to attach to this policy.
+      required:
+        - name
+        - default_threshold
+      description: |
+        A policy configuration, sent when creating or updating a policy.
+
+        Validation rules applied to every request:
+        1. A policy must contain at least one detector or one custom guardrail.
+        2. No two detectors may share the same `type` and `location` combination.
+        3. The `tool_definition::content` location is only valid for the `prompt_attack` detector.
+        4. `custom_guardrail_ids` must not contain duplicates.
+
+        Policy names must be unique within your organization.
+      title: PolicyRequest
+    PolicyResponseStatus:
+      type: string
+      enum:
+        - ok
+      description: Response status
+      title: PolicyResponseStatus
+    PolicyResponse:
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/PolicyResponseStatus'
+          description: Response status
+        message:
+          type: string
+          description: Human-readable response message
+        id:
+          type: string
+          description: Policy ID
+      description: Response returned when creating, updating or deleting a policy
+      title: PolicyResponse
+    ErrorStatus:
+      type: string
+      enum:
+        - error
+      description: Response status
+      title: ErrorStatus
+    Error:
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/ErrorStatus'
+          description: Response status
+        error:
+          type: string
+          description: Short machine-readable error identifier
+        message:
+          type: string
+          description: Human-readable error message
+        code:
+          type: integer
+          description: HTTP status code
+        request_id:
+          type: string
+          description: Unique identifier for the request
+      description: Standard error response format
+      title: Error
+    CustomPolicyDefaultThreshold:
+      type: string
+      enum:
+        - l1_confident
+        - l2_very_likely
+        - l3_likely
+        - l4_less_likely
+      description: |
+        The confidence level at or above which the policy's detectors flag content.
+      title: CustomPolicyDefaultThreshold
+    CustomGuardrailEntry:
+      type: object
+      properties:
+        id:
+          type: string
+          pattern: ^custom-guardrail-.+
+          description: The ID of the custom guardrail
+        locations:
+          type: array
+          items:
+            $ref: '#/components/schemas/ScreeningLocation'
+          description: |
+            The conversation locations this guardrail screens. Defaults to `user::content` and `assistant::content`.
+      required:
+        - id
+      description: A custom guardrail attached to a policy
+      title: CustomGuardrailEntry
+    PolicyProjectBriefAction:
+      type: string
+      enum:
+        - detect
+        - enforce
+      description: |
+        The project's mode. See [Project Mode](/docs/projects#project-mode).
+      title: PolicyProjectBriefAction
+    PolicyProjectBrief:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The ID of the project
+        name:
+          type: string
+          description: The name of the project
+        action:
+          $ref: '#/components/schemas/PolicyProjectBriefAction'
+          description: |
+            The project's mode. See [Project Mode](/docs/projects#project-mode).
+      description: A lightweight reference to a project that uses a policy
+      title: PolicyProjectBrief
+    CustomPolicy:
+      type: object
+      properties:
+        policy_id:
+          type: string
+          description: The ID of the policy
+        version_id:
+          type: integer
+          description: |
+            The policy's version number. Incremented each time the policy is updated.
+        name:
+          type: string
+          description: A descriptive name for the policy
+        default_threshold:
+          $ref: '#/components/schemas/CustomPolicyDefaultThreshold'
+          description: |
+            The confidence level at or above which the policy's detectors flag content.
+        detectors:
+          type: array
+          items:
+            $ref: '#/components/schemas/DetectorConfig'
+          description: The detectors configured on this policy
+        custom_guardrails:
+          type: array
+          items:
+            $ref: '#/components/schemas/CustomGuardrailEntry'
+          description: >
+            The custom guardrails attached to this policy. Note the asymmetry with `PolicyRequest`, which takes bare IDs
+            in `custom_guardrail_ids`.
+        updated_at:
+          type:
+            - string
+            - 'null'
+          format: date-time
+          description: When this version of the policy was created
+        projects:
+          type: array
+          items:
+            $ref: '#/components/schemas/PolicyProjectBrief'
+          description: The projects currently using this policy
+      required:
+        - policy_id
+        - version_id
+        - name
+        - default_threshold
+        - detectors
+      description: A policy as returned by the API
+      title: CustomPolicy
+    PolicyReadResponse:
+      type: object
+      properties:
+        policy:
+          $ref: '#/components/schemas/CustomPolicy'
+      required:
+        - policy
+      description: Response returned when reading a policy
+      title: PolicyReadResponse
+    ProjectAction:
+      type: string
+      enum:
+        - detect
+        - enforce
+      description: >
+        Controls whether Guard enforces flagging on this project. `enforce` (the default) means full enforcement: the
+        top-level `flagged` in a `guard` response is `true` whenever any of the enabled detectors triggers. `detect`
+        surfaces detections in the breakdown but forces the top-level `flagged` to `false`, letting you observe detector
+        behavior without blocking traffic. Always returned when reading a project. Optional when creating — defaults to
+        `enforce`. Optional when updating — omit to keep the existing value. More information in [Project
+        Mode](/docs/projects#project-mode).
+      title: ProjectAction
+    Project:
+      type: object
+      properties:
+        name:
+          type: string
+          description: A descriptive name for the project
+        policy_id:
+          type: string
+          description: ID of the policy to be applied to this project. If not provided, uses default policy.
+        project_metadata:
+          type: object
+          additionalProperties:
+            type: string
+          description: Custom metadata tags for analysis and cross referencing
+        action:
+          $ref: '#/components/schemas/ProjectAction'
+          description: >
+            Controls whether Guard enforces flagging on this project. `enforce` (the default) means full enforcement:
+            the top-level `flagged` in a `guard` response is `true` whenever any of the enabled detectors triggers.
+            `detect` surfaces detections in the breakdown but forces the top-level `flagged` to `false`, letting you
+            observe detector behavior without blocking traffic. Always returned when reading a project. Optional when
+            creating — defaults to `enforce`. Optional when updating — omit to keep the existing value. More information
+            in [Project Mode](/docs/projects#project-mode).
+      required:
+        - name
+      description: Project configuration for organizing policies and API keys
+      title: Project
+    Projects_deleteProject_Response_200:
+      type: object
+      properties: {}
+      description: Empty response body
+      title: Projects_deleteProject_Response_200
+    GetLogsRequest:
+      type: object
+      properties:
+        start_time:
+          type: string
+          format: date-time
+          description: Start of the time range (inclusive)
+        end_time:
+          type: string
+          format: date-time
+          description: End of the time range (exclusive). Must be after `start_time`.
+        project_id:
+          type:
+            - string
+            - 'null'
+          description: |
+            Filter to a single project by ID. Omit to return logs across all projects in your organization.
+        limit:
+          type: integer
+          minimum: 1
+          maximum: 1000
+          default: 100
+          description: Maximum number of logs to return. Logs are ordered by timestamp ascending (oldest first).
+        offset:
+          type: integer
+          minimum: 0
+          default: 0
+          description: >
+            Number of logs to skip before returning results. Use with `has_more` in the response to page through large
+            result sets: increment `offset` by `limit` until `has_more` is `false`.
+        flagged_only:
+          type: boolean
+          default: false
+          description: >
+            When `true`, only return requests where the policy action flagged the request. Independent of
+            `detected_only`.
+        detected_only:
+          type: boolean
+          default: false
+          description: >
+            When `true`, only return requests where at least one detector fired. This includes monitor-mode requests
+            where a detector fired but the policy did not flag. Independent of `flagged_only`.
+        detector_types:
+          type: array
+          items:
+            type: string
+          default: []
+          description: >
+            Filter to requests that triggered one or more of the listed detector types. An empty list (the default)
+            returns all requests regardless of detector.
+
+
+            Accepted values and their corresponding display names in the AI Guardrails Dashboard:
+
+
+            | API value | Dashboard display name |
+
+            |---|---|
+
+            | `prompt_attack` | Prompt attack |
+
+            | `data_leakage` | Data leakage (matches all sub-detectors) |
+
+            | `content_violation` | Content violation (matches all sub-detectors) |
+
+            | `unknown_links` | Unknown links |
+
+            | `deny_listed` | Deny-listed |
+
+            | `tool_access_control` | Tool access control (requires agentic policy feature — contact your Check Point
+            representative to request access) |
+
+            | `dangerous_deviation` | Dangerous Deviation |
+
+            | `custom_guardrail` | Custom guardrail |
+
+            | `audio_prompt_attack` | Audio prompt attack |
+
+            | `no_detections` | No detections (requests where no detectors fired) |
+      required:
+        - start_time
+        - end_time
+      description: Request body for the get-logs endpoint
+      title: GetLogsRequest
+    GuardMessage:
+      type: object
+      properties:
+        role:
+          type: string
+          description: The message role (e.g. `user`, `assistant`, `tool`)
+        content:
+          type: string
+          description: The text content of the message
+        content_parts_json:
+          type: string
+          description: Structured content parts serialized as JSON, for multi-part messages
+        size:
+          type: string
+          description: Size of the message content
+        index:
+          type: integer
+          description: Position of the message in the conversation
+        name:
+          type: string
+          description: Name field, present on tool and function messages
+        tool_calls:
+          type: array
+          items:
+            description: Any type
+          description: Tool calls made in this message, serialized as a JSON array
+        refusal:
+          type: string
+          description: Model refusal content, if present
+        tool_call_id:
+          type: string
+          description: ID linking a tool result back to its tool call
+      required:
+        - role
+        - content
+        - content_parts_json
+        - size
+        - index
+        - name
+        - tool_calls
+        - refusal
+        - tool_call_id
+      description: A single message in a screened conversation
+      title: GuardMessage
+    RequestResult:
+      type: object
+      properties:
+        detector_type:
+          type: string
+          description: The detector that produced this result
+        result:
+          type: string
+          description: The detector's verdict
+      required:
+        - detector_type
+        - result
+      description: A request-level detection result from a single detector
+      title: RequestResult
+    MsgResult:
+      type: object
+      properties:
+        detector_type:
+          type: string
+          description: The detector that produced this result
+        result:
+          type: string
+          description: The detector's verdict
+        message_id:
+          type:
+            - integer
+            - 'null'
+          description: Index of the message this result applies to
+        tool_id:
+          type:
+            - integer
+            - 'null'
+          description: Index of the tool call this result applies to, if applicable
+      required:
+        - detector_type
+        - result
+        - message_id
+        - tool_id
+      description: A message-level detection result from a single detector
+      title: MsgResult
+    GuardLog:
+      type: object
+      properties:
+        request_uuid:
+          type: string
+          description: Unique identifier for the Guard request (UUIDv7)
+        timestamp:
+          type: string
+          format: date-time
+          description: When the Guard request was processed
+        project_id:
+          type: string
+          description: >
+            The project this request was screened under. Requests made without an explicit project use the
+            organization's default project ID.
+        policy_id:
+          type: string
+          description: The policy applied to this request.
+        flagged:
+          type: boolean
+          description: Whether any detector flagged this request
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/GuardMessage'
+          description: The conversation messages that were screened
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/RequestResult'
+          description: >
+            Request-level detection results. Only includes detectors that flagged the request — unflagged detections are
+            omitted.
+        msg_results:
+          type: array
+          items:
+            $ref: '#/components/schemas/MsgResult'
+          description: >
+            Message-level detection results. Only includes detectors that flagged an individual message — unflagged
+            detections are omitted.
+        event_metadata:
+          type: string
+          description: >
+            Custom metadata attached to the request at call time, serialized as a JSON string. Empty object (`{}`) if no
+            metadata was provided.
+      required:
+        - request_uuid
+        - timestamp
+        - project_id
+        - policy_id
+        - flagged
+        - messages
+        - results
+        - msg_results
+        - event_metadata
+      description: A single Guard request log entry
+      title: GuardLog
+    GetLogsResponse:
+      type: object
+      properties:
+        logs:
+          type: array
+          items:
+            $ref: '#/components/schemas/GuardLog'
+        has_more:
+          type: boolean
+          description: >
+            `true` when there are more logs beyond this page. Increment `offset` by `limit` and repeat the request to
+            fetch the next page.
+      required:
+        - logs
+        - has_more
+      description: Guard logs for the requested time range
+      title: GetLogsResponse
+    GetAnalyticsRequest:
+      type: object
+      properties:
+        start_time:
+          type: string
+          format: date-time
+          description: >
+            Start of the time range (inclusive). Must be a UTC timestamp — use the `Z` or `+00:00` suffix. Sub-minute
+            seconds are silently floored.
+        end_time:
+          type: string
+          format: date-time
+          description: >
+            End of the time range (exclusive). Must be a UTC timestamp. After flooring, must be strictly after
+            `start_time`. The range may not exceed 180 days.
+        project_ids:
+          type: array
+          items:
+            type: string
+          default: []
+          description: >
+            Filter to specific projects. Omit or pass an empty array to return analytics across all projects in your
+            organization.
+        resolution:
+          type: string
+          default: P1D
+          description: >
+            Bucket size as an ISO 8601 duration: `PT{n}M`, `PT{n}H`, or `P{n}D` where `n` is a positive integer (e.g.
+            `PT15M`, `PT6H`, `P7D`). The time range after flooring must divide evenly by the resolution.
+      required:
+        - start_time
+        - end_time
+      description: Request body for the get-analytics endpoint
+      title: GetAnalyticsRequest
+    AnalyticsBucket:
+      type: object
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+          description: Start of this bucket, in UTC
+        num_requests:
+          type: integer
+          description: Total number of Guard requests in this bucket
+        total_flagged:
+          type: integer
+          description: Number of requests where at least one detector flagged
+        prompt_attack_flagged:
+          type: integer
+          description: Requests flagged by the `prompt_attack` detector
+        moderation_flagged:
+          type: integer
+          description: Requests flagged by any `moderated_content/*` detector
+        pii_flagged:
+          type: integer
+          description: Requests flagged by any `pii/*` detector
+        unknown_links_flagged:
+          type: integer
+          description: Requests flagged by the `unknown_links` detector
+        override_deny_flagged:
+          type: integer
+          description: Requests flagged by the `override_deny` detector
+      required:
+        - timestamp
+        - num_requests
+        - total_flagged
+        - prompt_attack_flagged
+        - moderation_flagged
+        - pii_flagged
+        - unknown_links_flagged
+        - override_deny_flagged
+      description: Aggregated Guard request counts for a single time bucket
+      title: AnalyticsBucket
+    ProjectAnalytics:
+      type: object
+      properties:
+        project_id:
+          type:
+            - string
+            - 'null'
+          description: |
+            The project ID. For requests made without an explicit project, this is the ID of the default project.
+        time_series:
+          type: array
+          items:
+            $ref: '#/components/schemas/AnalyticsBucket'
+          description: Ordered list of time buckets for this project
+      description: Time-series analytics for a single project
+      title: ProjectAnalytics
+    GetAnalyticsResponse:
+      type: object
+      properties:
+        effective_start_time:
+          type: string
+          format: date-time
+          description: |
+            The start of the time range after flooring sub-minute seconds, in UTC.
+        effective_end_time:
+          type: string
+          format: date-time
+          description: |
+            The end of the time range after flooring sub-minute seconds, in UTC.
+        resolution:
+          type: string
+          description: The bucket size used for this response, echoed from the request.
+        projects:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProjectAnalytics'
+          description: Per-project time series
+      required:
+        - effective_start_time
+        - effective_end_time
+        - resolution
+        - projects
+      description: Aggregated analytics bucketed by time and project
+      title: GetAnalyticsResponse
   securitySchemes:
     bearerAuth:
       type: http
       scheme: bearer
-      description: >-
-        Bearer token issued in the Lakera dashboard. Header format:
-        `Authorization: Bearer ${LAKERA_GUARD_API_KEY}`. Self-hosted
-        deployments may run without authentication.
-  schemas:
-    GuardMessage:
-      type: object
-      required:
-        - role
-        - content
-      properties:
-        role:
-          type: string
-          description: Role of the message author (for example system, user, assistant)
-          enum:
-            - system
-            - user
-            - assistant
-            - tool
-        content:
-          type: string
-          description: Message text to screen
-    GuardRequest:
-      type: object
-      required:
-        - messages
-      properties:
-        messages:
-          type: array
-          description: Conversation messages to screen
-          items:
-            $ref: '#/components/schemas/GuardMessage'
-        project_id:
-          type: string
-          description: Optional project identifier used to scope policies
-        policy_id:
-          type: string
-          description: Optional policy identifier to apply
-        breakdown:
-          type: boolean
-          description: When true return per-detector results
-        metadata:
-          type: object
-          additionalProperties: true
-          description: Optional caller-supplied metadata
-    GuardResponse:
-      type: object
-      properties:
-        flagged:
-          type: boolean
-          description: Whether the input was flagged as a threat
-        payload:
-          type: object
-          additionalProperties: true
-          description: Policy decision payload
-        dev_info:
-          type: object
-          additionalProperties: true
-          description: Diagnostic information (when enabled)
-    GuardResultsResponse:
-      type: object
-      properties:
-        results:
-          type: array
-          description: Per-detector results
-          items:
-            type: object
-            properties:
-              detector_type:
-                type: string
-              detected:
-                type: boolean
-              detector_id:
-                type: string
-              message_id:
-                type: string
-              start:
-                type: integer
-              end:
-                type: integer
+      description: |
+        Bearer authentication using API key. Generate an API key from the AI Guardrails Dashboard.
+        Example: Bearer sk_123...
+
+        Keys carry one of two access scopes, chosen when the key is created:
+
+        - **Read and write** — may call every endpoint. This is the default, and the
+          scope of every key created before scopes were introduced.
+        - **Read only** — may call read endpoints such as `/v1-beta/logs`,
+          `/v1-beta/analytics` and the `GET` endpoints. Write endpoints return `403`.
+
+        Issue a read-only key to anything that only needs to retrieve data, such as a
+        log-shipping job or a dashboard, so that it cannot modify your policies or
+        projects.

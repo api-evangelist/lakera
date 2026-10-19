@@ -1,0 +1,372 @@
+openapi: 3.2.0
+info:
+  title: Platform Logs API
+  version: 1.0.0
+servers:
+- url: https://platform.lakera.ai/api
+  description: Platform
+tags:
+- name: Logs
+paths:
+  /v1-beta/logs:
+    post:
+      operationId: logs_getLogs
+      summary: Get guard logs
+      description: 'Retrieve individual Guard request logs for your organization.
+
+
+        Returns up to `limit` logs (default 100, max 1000) ordered by timestamp ascending (oldest first). Only flagged results and message-level results are included in each log entry — unflagged detections are omitted.
+
+
+        **Pagination.** Use `offset` to page through results. When `has_more` is `true` in the response, increment `offset` by `limit` to fetch the next page. For example, to iterate over all logs in a time range with pages of 500: fetch with `offset=0`, then `offset=500`, then `offset=1000`, and so on until `has_more` is `false`.
+
+
+        **Filtering.** Narrow results using any combination of these filters:
+
+        - `flagged_only` — only requests where the policy action flagged the request.
+
+        - `detected_only` — only requests where at least one detector fired (includes
+
+        monitor-mode hits where the policy does not flag).
+
+
+        - `detector_types` — only requests that triggered one or more of the listed
+
+        detector types. See the `GetLogsRequest` schema for the list of accepted
+
+        values
+
+        and their corresponding display names in the AI Guardrails Dashboard.
+
+
+        **Authentication.** Use a Platform API key from the AI Guardrails Dashboard — not the Guard API key used for inference requests at `api.lakera.ai`.
+
+
+        **Access.** This endpoint is available to select organizations. Contact your Check Point representative to request access. Community users may also reach out to support@lakera.ai.'
+      tags:
+      - Logs
+      responses:
+        '200':
+          description: Guard logs for the requested time range
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetLogsResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: 'Access denied. Either the feature is not enabled for your organization, or the query exceeded ClickHouse resource limits — try narrowing the time range.
+
+            '
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: 'A requested project ID does not belong to your organization. Requests sent without a project are logged under `project-lakera-default` (or `project-lakera-audio-default` for audio), which are always accepted. Archived projects count as found.
+
+            '
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '421':
+          description: 'Your organization''s data is stored in a different region than the one that received the request. `https://platform.lakera.ai` serves organizations stored in `eu-west-1`. Send the request to the regional host named in the message, for example `https://us-east-1.platform.lakera.ai`.
+
+            '
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GetLogsRequest'
+      security:
+      - bearerAuth: []
+components:
+  schemas:
+    GuardMessage:
+      type: object
+      properties:
+        role:
+          type: string
+          description: The message role (e.g. `user`, `assistant`, `tool`)
+        content:
+          type: string
+          description: The text content of the message
+        content_parts_json:
+          type: string
+          description: Structured content parts serialized as JSON, for multi-part messages
+        size:
+          type: string
+          description: Size of the message content
+        index:
+          type: integer
+          description: Position of the message in the conversation
+        name:
+          type: string
+          description: Name field, present on tool and function messages
+        tool_calls:
+          type: array
+          items:
+            description: Any type
+          description: Tool calls made in this message, serialized as a JSON array
+        refusal:
+          type: string
+          description: Model refusal content, if present
+        tool_call_id:
+          type: string
+          description: ID linking a tool result back to its tool call
+      required:
+      - role
+      - content
+      - content_parts_json
+      - size
+      - index
+      - name
+      - tool_calls
+      - refusal
+      - tool_call_id
+      description: A single message in a screened conversation
+      title: GuardMessage
+    GuardLog:
+      type: object
+      properties:
+        request_uuid:
+          type: string
+          description: Unique identifier for the Guard request (UUIDv7)
+        timestamp:
+          type: string
+          format: date-time
+          description: When the Guard request was processed
+        project_id:
+          type: string
+          description: 'The project this request was screened under. Requests made without an explicit project use the organization''s default project ID.
+
+            '
+        policy_id:
+          type: string
+          description: The policy applied to this request.
+        flagged:
+          type: boolean
+          description: Whether any detector flagged this request
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/GuardMessage'
+          description: The conversation messages that were screened
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/RequestResult'
+          description: 'Request-level detection results. Only includes detectors that flagged the request — unflagged detections are omitted.
+
+            '
+        msg_results:
+          type: array
+          items:
+            $ref: '#/components/schemas/MsgResult'
+          description: 'Message-level detection results. Only includes detectors that flagged an individual message — unflagged detections are omitted.
+
+            '
+        event_metadata:
+          type: string
+          description: 'Custom metadata attached to the request at call time, serialized as a JSON string. Empty object (`{}`) if no metadata was provided.
+
+            '
+      required:
+      - request_uuid
+      - timestamp
+      - project_id
+      - policy_id
+      - flagged
+      - messages
+      - results
+      - msg_results
+      - event_metadata
+      description: A single Guard request log entry
+      title: GuardLog
+    ErrorStatus:
+      type: string
+      enum:
+      - error
+      description: Response status
+      title: ErrorStatus
+    RequestResult:
+      type: object
+      properties:
+        detector_type:
+          type: string
+          description: The detector that produced this result
+        result:
+          type: string
+          description: The detector's verdict
+      required:
+      - detector_type
+      - result
+      description: A request-level detection result from a single detector
+      title: RequestResult
+    Error:
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/ErrorStatus'
+          description: Response status
+        error:
+          type: string
+          description: Short machine-readable error identifier
+        message:
+          type: string
+          description: Human-readable error message
+        code:
+          type: integer
+          description: HTTP status code
+        request_id:
+          type: string
+          description: Unique identifier for the request
+      description: Standard error response format
+      title: Error
+    MsgResult:
+      type: object
+      properties:
+        detector_type:
+          type: string
+          description: The detector that produced this result
+        result:
+          type: string
+          description: The detector's verdict
+        message_id:
+          type:
+          - integer
+          - 'null'
+          description: Index of the message this result applies to
+        tool_id:
+          type:
+          - integer
+          - 'null'
+          description: Index of the tool call this result applies to, if applicable
+      required:
+      - detector_type
+      - result
+      - message_id
+      - tool_id
+      description: A message-level detection result from a single detector
+      title: MsgResult
+    GetLogsResponse:
+      type: object
+      properties:
+        logs:
+          type: array
+          items:
+            $ref: '#/components/schemas/GuardLog'
+        has_more:
+          type: boolean
+          description: '`true` when there are more logs beyond this page. Increment `offset` by `limit` and repeat the request to fetch the next page.
+
+            '
+      required:
+      - logs
+      - has_more
+      description: Guard logs for the requested time range
+      title: GetLogsResponse
+    GetLogsRequest:
+      type: object
+      properties:
+        start_time:
+          type: string
+          format: date-time
+          description: Start of the time range (inclusive)
+        end_time:
+          type: string
+          format: date-time
+          description: End of the time range (exclusive). Must be after `start_time`.
+        project_id:
+          type:
+          - string
+          - 'null'
+          description: 'Filter to a single project by ID. Omit to return logs across all projects in your organization.
+
+            '
+        limit:
+          type: integer
+          minimum: 1
+          maximum: 1000
+          default: 100
+          description: Maximum number of logs to return. Logs are ordered by timestamp ascending (oldest first).
+        offset:
+          type: integer
+          minimum: 0
+          default: 0
+          description: 'Number of logs to skip before returning results. Use with `has_more` in the response to page through large result sets: increment `offset` by `limit` until `has_more` is `false`.
+
+            '
+        flagged_only:
+          type: boolean
+          default: false
+          description: 'When `true`, only return requests where the policy action flagged the request. Independent of `detected_only`.
+
+            '
+        detected_only:
+          type: boolean
+          default: false
+          description: 'When `true`, only return requests where at least one detector fired. This includes monitor-mode requests where a detector fired but the policy did not flag. Independent of `flagged_only`.
+
+            '
+        detector_types:
+          type: array
+          items:
+            type: string
+          default: []
+          description: 'Filter to requests that triggered one or more of the listed detector types. An empty list (the default) returns all requests regardless of detector.
+
+
+            Accepted values and their corresponding display names in the AI Guardrails Dashboard:
+
+
+            | API value | Dashboard display name |
+
+            |---|---|
+
+            | `prompt_attack` | Prompt attack |
+
+            | `data_leakage` | Data leakage (matches all sub-detectors) |
+
+            | `content_violation` | Content violation (matches all sub-detectors) |
+
+            | `unknown_links` | Unknown links |
+
+            | `deny_listed` | Deny-listed |
+
+            | `tool_access_control` | Tool access control (requires agentic policy feature — contact your Check Point representative to request access) |
+
+            | `dangerous_deviation` | Dangerous Deviation |
+
+            | `custom_guardrail` | Custom guardrail |
+
+            | `audio_prompt_attack` | Audio prompt attack |
+
+            | `no_detections` | No detections (requests where no detectors fired) |
+
+            '
+      required:
+      - start_time
+      - end_time
+      description: Request body for the get-logs endpoint
+      title: GetLogsRequest
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      description: "Bearer authentication using API key. Generate an API key from the AI Guardrails Dashboard.\nExample: Bearer sk_123...\n\nKeys carry one of two access scopes, chosen when the key is created:\n\n- **Read and write** — may call every endpoint. This is the default, and the\n  scope of every key created before scopes were introduced.\n- **Read only** — may call read endpoints such as `/v1-beta/logs`,\n  `/v1-beta/analytics` and the `GET` endpoints. Write endpoints return `403`.\n\nIssue a read-only key to anything that only needs to retrieve data, such as a\nlog-shipping job or a dashboard, so that it cannot modify your policies or\nprojects.\n"

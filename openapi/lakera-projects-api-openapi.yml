@@ -1,0 +1,144 @@
+openapi: 3.2.0
+info:
+  title: Platform Projects API
+  version: 1.0.0
+servers:
+- url: https://platform.lakera.ai/api
+  description: Platform
+tags:
+- name: Projects
+paths:
+  /v1-beta/projects:
+    post:
+      operationId: projects_createProject
+      summary: Create project
+      description: Create a new project
+      tags:
+      - Projects
+      responses:
+        '200':
+          description: Project created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Project'
+      security:
+      - bearerAuth: []
+  /v1-beta/projects/{projectId}:
+    get:
+      operationId: projects_getProject
+      summary: Get project
+      description: Get a specific project by ID
+      tags:
+      - Projects
+      parameters:
+      - name: projectId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Project details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+      security:
+      - bearerAuth: []
+    put:
+      operationId: projects_updateProject
+      summary: Update project
+      description: Update a specific project
+      tags:
+      - Projects
+      parameters:
+      - name: projectId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Project updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Project'
+      security:
+      - bearerAuth: []
+    delete:
+      operationId: projects_deleteProject
+      summary: Delete project
+      description: Delete a specific project
+      tags:
+      - Projects
+      parameters:
+      - name: projectId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Project deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Projects_deleteProject_Response_200'
+      security:
+      - bearerAuth: []
+components:
+  schemas:
+    ProjectAction:
+      type: string
+      enum:
+      - detect
+      - enforce
+      description: 'Controls whether Guard enforces flagging on this project. `enforce` (the default) means full enforcement: the top-level `flagged` in a `guard` response is `true` whenever any of the enabled detectors triggers. `detect` surfaces detections in the breakdown but forces the top-level `flagged` to `false`, letting you observe detector behavior without blocking traffic. Always returned when reading a project. Optional when creating — defaults to `enforce`. Optional when updating — omit to keep the existing value. More information in [Project Mode](/docs/projects#project-mode).
+
+        '
+      title: ProjectAction
+    Project:
+      type: object
+      properties:
+        name:
+          type: string
+          description: A descriptive name for the project
+        policy_id:
+          type: string
+          description: ID of the policy to be applied to this project. If not provided, uses default policy.
+        project_metadata:
+          type: object
+          additionalProperties:
+            type: string
+          description: Custom metadata tags for analysis and cross referencing
+        action:
+          $ref: '#/components/schemas/ProjectAction'
+          description: 'Controls whether Guard enforces flagging on this project. `enforce` (the default) means full enforcement: the top-level `flagged` in a `guard` response is `true` whenever any of the enabled detectors triggers. `detect` surfaces detections in the breakdown but forces the top-level `flagged` to `false`, letting you observe detector behavior without blocking traffic. Always returned when reading a project. Optional when creating — defaults to `enforce`. Optional when updating — omit to keep the existing value. More information in [Project Mode](/docs/projects#project-mode).
+
+            '
+      required:
+      - name
+      description: Project configuration for organizing policies and API keys
+      title: Project
+    Projects_deleteProject_Response_200:
+      type: object
+      properties: {}
+      description: Empty response body
+      title: Projects_deleteProject_Response_200
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      description: "Bearer authentication using API key. Generate an API key from the AI Guardrails Dashboard.\nExample: Bearer sk_123...\n\nKeys carry one of two access scopes, chosen when the key is created:\n\n- **Read and write** — may call every endpoint. This is the default, and the\n  scope of every key created before scopes were introduced.\n- **Read only** — may call read endpoints such as `/v1-beta/logs`,\n  `/v1-beta/analytics` and the `GET` endpoints. Write endpoints return `403`.\n\nIssue a read-only key to anything that only needs to retrieve data, such as a\nlog-shipping job or a dashboard, so that it cannot modify your policies or\nprojects.\n"

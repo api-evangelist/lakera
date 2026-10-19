@@ -1,53 +1,652 @@
 openapi: 3.2.0
 info:
-  title: Lakera Guard Policies API
-  description: Lakera Guard is an AI security API that screens text content sent to and received from large language models. It detects prompt injection, jailbreaks, PII, unsafe content, and policy violations, returning flagged decisions and detailed detector results. Authentication uses a bearer token issued in the Lakera dashboard. Self-hosted deployments expose additional policy management and Kubernetes probe endpoints.
-  version: '2'
-  contact:
-    name: Lakera
-    url: https://docs.lakera.ai/docs/api
+  title: Platform Policies API
+  version: 1.0.0
 servers:
-- url: https://api.lakera.ai/v2
-  description: Lakera Guard global production endpoint
-- url: https://us.api.lakera.ai/v2
-  description: United States regional endpoint
-- url: https://eu-west-1.api.lakera.ai/v2
-  description: European regional endpoint
-security:
-- bearerAuth: []
+- url: https://platform.lakera.ai/api
+  description: Platform
 tags:
 - name: Policies
-  description: Policy validation (self-hosted)
 paths:
-  /policies/health:
-    get:
+  /v1/policies:
+    post:
+      operationId: policies_createPolicy
+      summary: Create policy
+      description: Create a new policy configuration
       tags:
       - Policies
-      operationId: policiesHealth
-      summary: Validate policy configuration (self-hosted)
       responses:
         '200':
-          description: Policy configuration is valid
-  /policies/lint:
-    post:
-      tags:
-      - Policies
-      operationId: policiesLint
-      summary: Lint a policy file (self-hosted)
+          description: Policy created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PolicyResponse'
+        '400':
+          description: 'The request could not be processed. Returned when a policy with the same name already exists in your organization.
+
+            '
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: 'Your API key is read-only and this endpoint writes, Policies V2 is not enabled for your organization, or your organization has reached its maximum number of policies.
+
+            '
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: The policy failed validation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
       requestBody:
-        required: true
         content:
           application/json:
             schema:
-              type: object
-              additionalProperties: true
-              description: Policy document to lint
+              $ref: '#/components/schemas/PolicyRequest'
+      security:
+      - bearerAuth: []
+  /v1/policies/{policyId}:
+    get:
+      operationId: policies_getPolicy
+      summary: Get policy
+      description: Retrieve a single policy, including the projects currently using it
+      tags:
+      - Policies
+      parameters:
+      - name: policyId
+        in: path
+        required: true
+        schema:
+          type: string
       responses:
         '200':
-          description: Lint result
+          description: Policy details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PolicyReadResponse'
+        '403':
+          description: 'Your API key is read-only and this endpoint writes, Policies V2 is not enabled for your organization, or your organization has reached its maximum number of policies.
+
+            '
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: No policy with this ID exists in your organization
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - bearerAuth: []
+    put:
+      operationId: policies_updatePolicy
+      summary: Update policy
+      description: Replace a policy configuration. The request body is the complete policy — any detector or custom guardrail omitted from the request is removed from the policy. A successful update creates a new policy version.
+      tags:
+      - Policies
+      parameters:
+      - name: policyId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Policy updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PolicyResponse'
+        '400':
+          description: 'The request could not be processed. Returned when a policy with the same name already exists in your organization.
+
+            '
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: 'Your API key is read-only and this endpoint writes, Policies V2 is not enabled for your organization, or your organization has reached its maximum number of policies.
+
+            '
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: No policy with this ID exists in your organization
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: The policy failed validation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PolicyRequest'
+      security:
+      - bearerAuth: []
+    delete:
+      operationId: policies_deletePolicy
+      summary: Delete policy
+      description: Delete a policy. A policy cannot be deleted while any project is assigned to it — reassign those projects first.
+      tags:
+      - Policies
+      parameters:
+      - name: policyId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Policy deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PolicyResponse'
+        '403':
+          description: 'Your API key is read-only and this endpoint writes, Policies V2 is not enabled for your organization, or your organization has reached its maximum number of policies.
+
+            '
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: No policy with this ID exists in your organization
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: The policy is still assigned to one or more projects
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+      - bearerAuth: []
+  /v1-beta/policies:
+    post:
+      operationId: policies_createPolicyV1Beta
+      summary: Create policy (retired)
+      description: Retired with the launch of Policies V2. Returns `410 Gone` with the message "This endpoint is disabled. Use POST /api/v1/policies instead."
+      tags:
+      - Policies
+      responses:
+        '200':
+          description: Successful response
+        '410':
+          description: 'This endpoint was retired with the launch of Policies V2. Use the corresponding `/api/v1/policies` endpoint instead.
+
+            '
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      deprecated: true
+      security:
+      - bearerAuth: []
+  /v1-beta/policies/{policyId}:
+    get:
+      operationId: policies_getPolicyV1Beta
+      summary: Get policy (retired)
+      description: Retired with the launch of Policies V2. Returns `410 Gone` with the message "This endpoint is disabled. Use GET /api/v1/policies/<policy_id> instead."
+      tags:
+      - Policies
+      parameters:
+      - name: policyId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Successful response
+        '410':
+          description: 'This endpoint was retired with the launch of Policies V2. Use the corresponding `/api/v1/policies` endpoint instead.
+
+            '
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      deprecated: true
+      security:
+      - bearerAuth: []
+    put:
+      operationId: policies_updatePolicyV1Beta
+      summary: Update policy (retired)
+      description: Retired with the launch of Policies V2. Returns `410 Gone` with the message "This endpoint is disabled. Use PUT /api/v1/policies/<policy_id> instead."
+      tags:
+      - Policies
+      parameters:
+      - name: policyId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Successful response
+        '410':
+          description: 'This endpoint was retired with the launch of Policies V2. Use the corresponding `/api/v1/policies` endpoint instead.
+
+            '
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      deprecated: true
+      security:
+      - bearerAuth: []
+    delete:
+      operationId: policies_deletePolicyV1Beta
+      summary: Delete policy (retired)
+      description: Retired with the launch of Policies V2. Returns `410 Gone` with the message "This endpoint is disabled. Use DELETE /api/v1/policies/<policy_id> instead."
+      tags:
+      - Policies
+      parameters:
+      - name: policyId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Successful response
+        '410':
+          description: 'This endpoint was retired with the launch of Policies V2. Use the corresponding `/api/v1/policies` endpoint instead.
+
+            '
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      deprecated: true
+      security:
+      - bearerAuth: []
 components:
+  schemas:
+    ScreeningLocation:
+      type: string
+      enum:
+      - user::content
+      - assistant::content
+      - assistant::tool_call
+      - tool::content
+      - tool_definition::content
+      description: 'Where in the conversation a detector screens.
+
+
+        - `user::content` — content of user messages (model input).
+
+        - `assistant::content` — content of model responses (model output).
+
+        - `assistant::tool_call` — the arguments an agent passes into a tool.
+
+        - `tool::content` — the content a tool returns to the agent.
+
+        - `tool_definition::content` — the tool definitions you expose to the model. Only valid for the `prompt_attack` detector.
+
+        '
+      title: ScreeningLocation
+    DetectorConfigType:
+      type: string
+      enum:
+      - prompt_attack
+      - moderated_content/hate
+      - moderated_content/sexual
+      - moderated_content/profanity
+      - moderated_content/violence
+      - moderated_content/weapons
+      - moderated_content/crime
+      - moderated_content/self_harm
+      - pii/address
+      - pii/credit_card
+      - pii/email
+      - pii/ip_address
+      - pii/name
+      - pii/phone_number
+      - pii/us_social_security_number
+      - pii/iban_code
+      - unknown_links
+      - override_allow
+      - override_deny
+      - tool_risk/payload
+      - tool_risk/create
+      - tool_risk/read
+      - tool_risk/update
+      - tool_risk/delete
+      - tool_risk/untrusted_destination
+      - tool_risk/untrusted_source
+      - dangerous_deviation
+      - tool_access_control
+      description: The detector type
+      title: DetectorConfigType
+    CustomPolicyDefaultThreshold:
+      type: string
+      enum:
+      - l1_confident
+      - l2_very_likely
+      - l3_likely
+      - l4_less_likely
+      description: 'The confidence level at or above which the policy''s detectors flag content.
+
+        '
+      title: CustomPolicyDefaultThreshold
+    PolicyRequestDefaultThreshold:
+      type: string
+      enum:
+      - l1_confident
+      - l2_very_likely
+      - l3_likely
+      - l4_less_likely
+      description: 'The confidence level at or above which the policy''s detectors flag content. `l1_confident` is the most lenient and `l4_less_likely` the strictest. Thresholds are inclusive — `l2_very_likely` flags on both `l2_very_likely` and `l1_confident` detections.
+
+        '
+      title: PolicyRequestDefaultThreshold
+    PolicyRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+          description: 'A descriptive name for the policy. Leading and trailing whitespace is stripped. Must be unique within your organization.
+
+            '
+        default_threshold:
+          $ref: '#/components/schemas/PolicyRequestDefaultThreshold'
+          description: 'The confidence level at or above which the policy''s detectors flag content. `l1_confident` is the most lenient and `l4_less_likely` the strictest. Thresholds are inclusive — `l2_very_likely` flags on both `l2_very_likely` and `l1_confident` detections.
+
+            '
+        detectors:
+          type: array
+          items:
+            $ref: '#/components/schemas/DetectorConfig'
+          description: 'The detectors to run. Each entry pairs a detector `type` with the `location` in the conversation it screens.
+
+            '
+        custom_guardrail_ids:
+          type: array
+          items:
+            type: string
+            pattern: ^custom-guardrail-.+
+          description: IDs of the custom guardrails to attach to this policy.
+      required:
+      - name
+      - default_threshold
+      description: 'A policy configuration, sent when creating or updating a policy.
+
+
+        Validation rules applied to every request:
+
+        1. A policy must contain at least one detector or one custom guardrail.
+
+        2. No two detectors may share the same `type` and `location` combination.
+
+        3. The `tool_definition::content` location is only valid for the `prompt_attack` detector.
+
+        4. `custom_guardrail_ids` must not contain duplicates.
+
+
+        Policy names must be unique within your organization.
+
+        '
+      title: PolicyRequest
+    ErrorStatus:
+      type: string
+      enum:
+      - error
+      description: Response status
+      title: ErrorStatus
+    PolicyProjectBrief:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The ID of the project
+        name:
+          type: string
+          description: The name of the project
+        action:
+          $ref: '#/components/schemas/PolicyProjectBriefAction'
+          description: 'The project''s mode. See [Project Mode](/docs/projects#project-mode).
+
+            '
+      description: A lightweight reference to a project that uses a policy
+      title: PolicyProjectBrief
+    CustomGuardrailEntry:
+      type: object
+      properties:
+        id:
+          type: string
+          pattern: ^custom-guardrail-.+
+          description: The ID of the custom guardrail
+        locations:
+          type: array
+          items:
+            $ref: '#/components/schemas/ScreeningLocation'
+          description: 'The conversation locations this guardrail screens. Defaults to `user::content` and `assistant::content`.
+
+            '
+      required:
+      - id
+      description: A custom guardrail attached to a policy
+      title: CustomGuardrailEntry
+    DetectorConfig:
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/DetectorConfigType'
+          description: The detector type
+        location:
+          $ref: '#/components/schemas/ScreeningLocation'
+        allowed_domains:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: 'A list of trusted domains that should not be flagged by the `unknown_links` detector. Only applicable when `type` is `unknown_links`. Include only the domain name and top-level domain (e.g. "example.com"). Do not include prefixes like "http://" or "www.", or subdomains like "platform.example.com".
+
+            '
+        override_list:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: 'A list of strings to allow or deny, used to override model flagging decisions. Required when `type` is `override_allow` or `override_deny`, and not applicable to other types. `override_allow` prevents matching content from being flagged; `override_deny` forces matching content to be flagged.
+
+            '
+        tool_access_action:
+          oneOf:
+          - $ref: '#/components/schemas/DetectorConfigToolAccessAction'
+          - type: 'null'
+          description: 'Whether `tool_access_list` is an allow list or a deny list. Required when `type` is `tool_access_control`, and not applicable to other types.
+
+            '
+        tool_access_list:
+          type:
+          - array
+          - 'null'
+          items:
+            type: string
+          description: 'The tool names to allow or deny, per `tool_access_action`. Required when `type` is `tool_access_control`, and not applicable to other types.
+
+            '
+        allowed_tools:
+          type:
+          - array
+          - 'null'
+          items:
+            $ref: '#/components/schemas/DetectorConfigAllowedToolsItems'
+          description: 'Tool definitions that the `prompt_attack` detector should not flag when screening `tool_definition::content`. Only applicable when `type` is `prompt_attack`. Each entry must be unique on (`tool_name`, `tool_matcher`).
+
+            '
+      required:
+      - type
+      - location
+      description: 'A single detector, screening one location. To run the same detector on more than one location, add one entry per location.
+
+        '
+      title: DetectorConfig
+    CustomPolicy:
+      type: object
+      properties:
+        policy_id:
+          type: string
+          description: The ID of the policy
+        version_id:
+          type: integer
+          description: 'The policy''s version number. Incremented each time the policy is updated.
+
+            '
+        name:
+          type: string
+          description: A descriptive name for the policy
+        default_threshold:
+          $ref: '#/components/schemas/CustomPolicyDefaultThreshold'
+          description: 'The confidence level at or above which the policy''s detectors flag content.
+
+            '
+        detectors:
+          type: array
+          items:
+            $ref: '#/components/schemas/DetectorConfig'
+          description: The detectors configured on this policy
+        custom_guardrails:
+          type: array
+          items:
+            $ref: '#/components/schemas/CustomGuardrailEntry'
+          description: 'The custom guardrails attached to this policy. Note the asymmetry with `PolicyRequest`, which takes bare IDs in `custom_guardrail_ids`.
+
+            '
+        updated_at:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: When this version of the policy was created
+        projects:
+          type: array
+          items:
+            $ref: '#/components/schemas/PolicyProjectBrief'
+          description: The projects currently using this policy
+      required:
+      - policy_id
+      - version_id
+      - name
+      - default_threshold
+      - detectors
+      description: A policy as returned by the API
+      title: CustomPolicy
+    PolicyResponseStatus:
+      type: string
+      enum:
+      - ok
+      description: Response status
+      title: PolicyResponseStatus
+    Error:
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/ErrorStatus'
+          description: Response status
+        error:
+          type: string
+          description: Short machine-readable error identifier
+        message:
+          type: string
+          description: Human-readable error message
+        code:
+          type: integer
+          description: HTTP status code
+        request_id:
+          type: string
+          description: Unique identifier for the request
+      description: Standard error response format
+      title: Error
+    DetectorConfigToolAccessAction:
+      type: string
+      enum:
+      - allow
+      - deny
+      description: 'Whether `tool_access_list` is an allow list or a deny list. Required when `type` is `tool_access_control`, and not applicable to other types.
+
+        '
+      title: DetectorConfigToolAccessAction
+    PolicyResponse:
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/PolicyResponseStatus'
+          description: Response status
+        message:
+          type: string
+          description: Human-readable response message
+        id:
+          type: string
+          description: Policy ID
+      description: Response returned when creating, updating or deleting a policy
+      title: PolicyResponse
+    PolicyReadResponse:
+      type: object
+      properties:
+        policy:
+          $ref: '#/components/schemas/CustomPolicy'
+      required:
+      - policy
+      description: Response returned when reading a policy
+      title: PolicyReadResponse
+    PolicyProjectBriefAction:
+      type: string
+      enum:
+      - detect
+      - enforce
+      description: 'The project''s mode. See [Project Mode](/docs/projects#project-mode).
+
+        '
+      title: PolicyProjectBriefAction
+    DetectorConfigAllowedToolsItems:
+      type: object
+      properties:
+        tool_name:
+          type: string
+          minLength: 1
+          maxLength: 256
+          description: The name of the tool.
+        tool_matcher:
+          type: string
+          minLength: 1
+          maxLength: 20000
+          description: 'The tool definition this entry allows. An entry matches only when both the name and the definition match.
+
+            '
+      required:
+      - tool_name
+      - tool_matcher
+      title: DetectorConfigAllowedToolsItems
   securitySchemes:
     bearerAuth:
       type: http
       scheme: bearer
-      description: 'Bearer token issued in the Lakera dashboard. Header format: `Authorization: Bearer ${LAKERA_GUARD_API_KEY}`. Self-hosted deployments may run without authentication.'
+      description: "Bearer authentication using API key. Generate an API key from the AI Guardrails Dashboard.\nExample: Bearer sk_123...\n\nKeys carry one of two access scopes, chosen when the key is created:\n\n- **Read and write** — may call every endpoint. This is the default, and the\n  scope of every key created before scopes were introduced.\n- **Read only** — may call read endpoints such as `/v1-beta/logs`,\n  `/v1-beta/analytics` and the `GET` endpoints. Write endpoints return `403`.\n\nIssue a read-only key to anything that only needs to retrieve data, such as a\nlog-shipping job or a dashboard, so that it cannot modify your policies or\nprojects.\n"

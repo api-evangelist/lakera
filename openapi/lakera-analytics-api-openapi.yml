@@ -1,0 +1,235 @@
+openapi: 3.2.0
+info:
+  title: Platform Analytics API
+  version: 1.0.0
+servers:
+- url: https://platform.lakera.ai/api
+  description: Platform
+tags:
+- name: Analytics
+paths:
+  /v1-beta/analytics:
+    post:
+      operationId: analytics_getAnalytics
+      summary: Get analytics
+      description: 'Retrieve aggregated Guard request analytics bucketed by time and project.
+
+
+        The response groups buckets by project. Each bucket covers one `resolution` interval and contains request and detection counts for that interval.
+
+
+        **Authentication.** Use a Platform API key from the AI Guardrails Dashboard — not the Guard API key used for inference requests at `api.lakera.ai`.
+
+
+        **Timestamps.** Both `start_time` and `end_time` must be UTC (use the `Z` or `+00:00` suffix). Sub-minute seconds are silently floored to the nearest minute. After flooring, `start_time` must remain strictly before `end_time`.
+
+
+        **Resolution.** An ISO 8601 duration string: `PT{n}M`, `PT{n}H`, or `P{n}D` where `n` is a positive integer (e.g. `PT15M`, `PT6H`, `P7D`). The time range after flooring must divide evenly by the resolution. The maximum range is 180 days.
+
+
+        **Access.** This endpoint is available to select organizations. Contact your Check Point representative to request access. Community users may also reach out to support@lakera.ai.'
+      tags:
+      - Analytics
+      responses:
+        '200':
+          description: Aggregated analytics bucketed by time and project
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetAnalyticsResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: 'Access denied. Either the feature is not enabled for your organization, or the query exceeded ClickHouse resource limits — try narrowing the time range.
+
+            '
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: 'A requested project ID does not belong to your organization. Requests sent without a project are logged under `project-lakera-default` (or `project-lakera-audio-default` for audio), which are always accepted. Archived projects count as found.
+
+            '
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '421':
+          description: 'Your organization''s data is stored in a different region than the one that received the request. `https://platform.lakera.ai` serves organizations stored in `eu-west-1`. Send the request to the regional host named in the message, for example `https://us-east-1.platform.lakera.ai`.
+
+            '
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GetAnalyticsRequest'
+      security:
+      - bearerAuth: []
+components:
+  schemas:
+    ErrorStatus:
+      type: string
+      enum:
+      - error
+      description: Response status
+      title: ErrorStatus
+    GetAnalyticsResponse:
+      type: object
+      properties:
+        effective_start_time:
+          type: string
+          format: date-time
+          description: 'The start of the time range after flooring sub-minute seconds, in UTC.
+
+            '
+        effective_end_time:
+          type: string
+          format: date-time
+          description: 'The end of the time range after flooring sub-minute seconds, in UTC.
+
+            '
+        resolution:
+          type: string
+          description: The bucket size used for this response, echoed from the request.
+        projects:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProjectAnalytics'
+          description: Per-project time series
+      required:
+      - effective_start_time
+      - effective_end_time
+      - resolution
+      - projects
+      description: Aggregated analytics bucketed by time and project
+      title: GetAnalyticsResponse
+    Error:
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/ErrorStatus'
+          description: Response status
+        error:
+          type: string
+          description: Short machine-readable error identifier
+        message:
+          type: string
+          description: Human-readable error message
+        code:
+          type: integer
+          description: HTTP status code
+        request_id:
+          type: string
+          description: Unique identifier for the request
+      description: Standard error response format
+      title: Error
+    ProjectAnalytics:
+      type: object
+      properties:
+        project_id:
+          type:
+          - string
+          - 'null'
+          description: 'The project ID. For requests made without an explicit project, this is the ID of the default project.
+
+            '
+        time_series:
+          type: array
+          items:
+            $ref: '#/components/schemas/AnalyticsBucket'
+          description: Ordered list of time buckets for this project
+      description: Time-series analytics for a single project
+      title: ProjectAnalytics
+    AnalyticsBucket:
+      type: object
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+          description: Start of this bucket, in UTC
+        num_requests:
+          type: integer
+          description: Total number of Guard requests in this bucket
+        total_flagged:
+          type: integer
+          description: Number of requests where at least one detector flagged
+        prompt_attack_flagged:
+          type: integer
+          description: Requests flagged by the `prompt_attack` detector
+        moderation_flagged:
+          type: integer
+          description: Requests flagged by any `moderated_content/*` detector
+        pii_flagged:
+          type: integer
+          description: Requests flagged by any `pii/*` detector
+        unknown_links_flagged:
+          type: integer
+          description: Requests flagged by the `unknown_links` detector
+        override_deny_flagged:
+          type: integer
+          description: Requests flagged by the `override_deny` detector
+      required:
+      - timestamp
+      - num_requests
+      - total_flagged
+      - prompt_attack_flagged
+      - moderation_flagged
+      - pii_flagged
+      - unknown_links_flagged
+      - override_deny_flagged
+      description: Aggregated Guard request counts for a single time bucket
+      title: AnalyticsBucket
+    GetAnalyticsRequest:
+      type: object
+      properties:
+        start_time:
+          type: string
+          format: date-time
+          description: 'Start of the time range (inclusive). Must be a UTC timestamp — use the `Z` or `+00:00` suffix. Sub-minute seconds are silently floored.
+
+            '
+        end_time:
+          type: string
+          format: date-time
+          description: 'End of the time range (exclusive). Must be a UTC timestamp. After flooring, must be strictly after `start_time`. The range may not exceed 180 days.
+
+            '
+        project_ids:
+          type: array
+          items:
+            type: string
+          default: []
+          description: 'Filter to specific projects. Omit or pass an empty array to return analytics across all projects in your organization.
+
+            '
+        resolution:
+          type: string
+          default: P1D
+          description: 'Bucket size as an ISO 8601 duration: `PT{n}M`, `PT{n}H`, or `P{n}D` where `n` is a positive integer (e.g. `PT15M`, `PT6H`, `P7D`). The time range after flooring must divide evenly by the resolution.
+
+            '
+      required:
+      - start_time
+      - end_time
+      description: Request body for the get-analytics endpoint
+      title: GetAnalyticsRequest
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      description: "Bearer authentication using API key. Generate an API key from the AI Guardrails Dashboard.\nExample: Bearer sk_123...\n\nKeys carry one of two access scopes, chosen when the key is created:\n\n- **Read and write** — may call every endpoint. This is the default, and the\n  scope of every key created before scopes were introduced.\n- **Read only** — may call read endpoints such as `/v1-beta/logs`,\n  `/v1-beta/analytics` and the `GET` endpoints. Write endpoints return `403`.\n\nIssue a read-only key to anything that only needs to retrieve data, such as a\nlog-shipping job or a dashboard, so that it cannot modify your policies or\nprojects.\n"
