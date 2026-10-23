@@ -233,3 +233,9 @@ components:
       type: http
       scheme: bearer
       description: "Bearer authentication using API key. Generate an API key from the AI Guardrails Dashboard.\nExample: Bearer sk_123...\n\nKeys carry one of two access scopes, chosen when the key is created:\n\n- **Read and write** — may call every endpoint. This is the default, and the\n  scope of every key created before scopes were introduced.\n- **Read only** — may call read endpoints such as `/v1-beta/logs`,\n  `/v1-beta/analytics` and the `GET` endpoints. Write endpoints return `403`.\n\nIssue a read-only key to anything that only needs to retrieve data, such as a\nlog-shipping job or a dashboard, so that it cannot modify your policies or\nprojects.\n"
+x-provenance:
+  method: harvested
+  publisher: Lakera
+  source: https://docs.lakera.ai/openapi/platform-api.yaml
+  note: split by refine-openapis from the provider's own published document, verified by fetch (openapi/_original/*.fetch.json);
+    stamped by stamp-openapi-provenance.py (roadmap#793)
