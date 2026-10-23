@@ -55,10 +55,44 @@ edges:
     detected: '2026-10-20'
   detected_by: sweep-compliance-assurance.py
   first_seen: '2026-10-20'
+- partner_name: Hugging Face (hugging-face-hub)
+  partner: hugging-face
+  partner_match: mirror
+  mirror_match: domain
+  type: marketplace
+  relationship: platform-app
+  direction: third-party
+  channel: partner-built
+  marketplace: hugging-face-hub
+  evidence: https://huggingface.co/Lakera
+  mirror_of: hugging-face/integrations/hugging-face-integration-edges.yml
+  apps:
+  - Lakera/b3-agent-security-benchmark-weak
+  - Lakera/gandalf_ignore_instructions
+  - Lakera/mosscap_prompt_injection
+  - Lakera/gandalf_summarization
+  - Lakera/gandalf-rct
+  - Lakera/gandalf-rct-user
+  - Lakera/gandalf-rct-attack-categories
+  - Lakera/gandalf-rct-did
+  - Lakera/autotrain-cancer-lakera-50807121081
+  - Lakera/autotrain-cancer-lakera-50807121085
+  - Lakera/autotrain-cancer-lakera-50807121083
+  - Lakera/autotrain-cancer-lakera-50807121082
+  - Lakera/autotrain-cancer-lakera-50807121084
+  - Lakera/safety-card
+  - Lakera/mltest
+  listing_count: 3
+  detected: '2026-10-23'
+  detected_by: mirror-platform-listings.py
+  category: Hugging Face Hub datasets
+  badges:
+  - Verified publisher (Hugging Face verified organisation)
 method: searched
 checked:
 - https://cloudsecurityalliance.org/star/registry
 - https://eucoc.cloud/en/public-register/list-of-adherent-services
 - https://zapier.com/api/v4/apps/
+- hugging-face/integrations/hugging-face-integration-edges.yml
 source:
 - https://zapier.com/api/v4/apps/
